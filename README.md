@@ -1,15 +1,16 @@
 # InvenTree CustomApp
 
 [![Latest Release](https://img.shields.io/github/v/release/BI7KHI/inventree-customapp?display_name=tag&sort=semver)](https://github.com/BI7KHI/inventree-customapp/releases/latest)
+[![Field Style](https://img.shields.io/badge/pre--release-1.3.0--field-F2E900?labelColor=11130F)](https://github.com/BI7KHI/inventree-customapp/releases/tag/v1.3.0-field)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
 [![InvenTree API](https://img.shields.io/badge/InvenTree-1.5.x%20%2F%20API%20530-146B54)](https://inventree.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 面向 InvenTree 的原生 Android 客户端，使用 Kotlin、Jetpack Compose、Material 3 实现。直接调用 InvenTree REST API，库存、库位、零件、账户数据与网页端实时一致。
 
-> **分支说明**：当前为 `end` 分支的 **Field Style** 界面实验（`1.3.0-field`）。功能与稳定版 1.2.1 对齐，视觉与交互已重做；`main` 分支和 GitHub Release 仍为 1.2.1。
+> **1.3.0-field 预发布**：Field Style 已完成视觉确认，合并到 `main` 并发布 GitHub Pre-release。功能与稳定版 1.2.1 对齐，视觉与交互已重做；`latest` 仍指向稳定版 1.2.1。
 
-## Field Style（end 分支）
+## Field Style（1.3.0-field 预发布）
 
 工业编辑风 + 近未来现场终端：暖纸白/碳黑中性底、信号黄/青、切角卡片、细网格、HUD 微标签、扫描线、警示斜纹与短促转场。
 
@@ -39,15 +40,28 @@
 
 ## 下载
 
-[**⬇️ 下载最新 Release**](https://github.com/BI7KHI/inventree-customapp/releases/latest)
+### 1.3.0-field 预发布
+
+[**⬇️ 下载 Field Style 预发布**](https://github.com/BI7KHI/inventree-customapp/releases/tag/v1.3.0-field)
+
+| 项目 | 值 |
+| --- | --- |
+| 版本 | **1.3.0-field** |
+| 文件 | `InvenTree-Mobile-1.3.0-field.apk` |
+| 包名 | `xyz.bi7khi.inventree.mobile` |
+| 系统要求 | Android 8.0+（API 26），targetSdk 35 |
+| APK SHA-256 | `164ff49efed6493b1af90d82ee81becf11e0ae692ca7a20e8fb90feb25a83f07` |
+
+> Pre-release 用于真机视觉验证，不替换 `latest` 稳定版；与 1.2.1 同签名，可直接覆盖安装并保留应用数据。
+
+### 稳定版 1.2.1
+
+[**⬇️ 下载最新稳定版**](https://github.com/BI7KHI/inventree-customapp/releases/latest)
 
 | 项目 | 值 |
 | --- | --- |
 | 稳定版 | **1.2.1** |
 | 文件 | `InvenTree-Mobile-1.2.1.apk` |
-| 包名 | `xyz.bi7khi.inventree.mobile` |
-| 系统要求 | Android 8.0+（API 26），targetSdk 35 |
-| 服务器 | 支持任意 InvenTree 1.5.x（API 530+），地址可在 App 内配置 |
 | APK SHA-256 | `55daf7e465269463e45ecf5d77b6b9e5b2c8638c767a31c9ce203b11b9352840` |
 
 > GitHub Release 附件是签名 APK；`dist/` 是本地构建产物，不纳入 Git。
@@ -259,6 +273,7 @@ dist/                本地构建 APK（Git 忽略）
 ## 文档
 
 - [Field Style 设计说明](docs/FIELD_STYLE.md)
+- [1.3.0-field 预发布说明](docs/RELEASE_1.3.0-FIELD.md)
 - [BLE 打印与传输](docs/BLE_PRINTING.md)
 - [标签变量列表](docs/LABEL_VARIABLES.md)
 - [变更记录](CHANGELOG.md)

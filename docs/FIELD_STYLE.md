@@ -104,4 +104,4 @@ ui/screens/ScanScreen.kt       扫描 HUD
 ./gradlew :app:assembleRelease
 ```
 
-`end` 分支版本号为 `1.3.0-field`，功能与 `main` / 1.2.1 保持一致，仅替换界面语言与交互表现。稳定版仍以 `main` 分支和 GitHub Release 为准。
+`1.3.0-field` 为 Field Style 预发布版本，功能与 1.2.1 保持一致，仅替换界面语言与交互表现。预发布已合并到 `main` 并发布 GitHub Pre-release；稳定版仍以 `latest` Release 1.2.1 为准。
