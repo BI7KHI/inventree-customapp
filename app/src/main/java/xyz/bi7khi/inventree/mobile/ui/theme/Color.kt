@@ -1,0 +1,41 @@
+package xyz.bi7khi.inventree.mobile.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val BrandGreen = Color(0xFF146B54)
+val BrandGreenDark = Color(0xFF0B3B2E)
+val BrandMint = Color(0xFF67D5A8)
+val BrandMintSoft = Color(0xFFD9F5E8)
+
+val LightPrimary = Color(0xFF146B54)
+val LightOnPrimary = Color(0xFFFFFFFF)
+val LightPrimaryContainer = Color(0xFFA6F2D1)
+val LightOnPrimaryContainer = Color(0xFF002117)
+val LightSecondary = Color(0xFF4C6358)
+val LightSecondaryContainer = Color(0xFFCFE9DB)
+val LightTertiary = Color(0xFF3D6473)
+val LightTertiaryContainer = Color(0xFFC1E8FA)
+val LightBackground = Color(0xFFF6FBF8)
+val LightSurface = Color(0xFFFBFDFB)
+val LightSurfaceVariant = Color(0xFFDCE5DF)
+val LightOutline = Color(0xFF707974)
+val LightError = Color(0xFFBA1A1A)
+
+val DarkPrimary = Color(0xFF8BD6B8)
+val DarkOnPrimary = Color(0xFF003828)
+val DarkPrimaryContainer = Color(0xFF00513C)
+val DarkOnPrimaryContainer = Color(0xFFA6F2D1)
+val DarkSecondary = Color(0xFFB3CCBE)
+val DarkSecondaryContainer = Color(0xFF354B41)
+val DarkTertiary = Color(0xFFA5CCDC)
+val DarkTertiaryContainer = Color(0xFF244C5A)
+val DarkBackground = Color(0xFF0E1512)
+val DarkSurface = Color(0xFF111A16)
+val DarkSurfaceVariant = Color(0xFF3F4944)
+val DarkOutline = Color(0xFF89938D)
+val DarkError = Color(0xFFFFB4AB)
+
+val Success = Color(0xFF177A4C)
+val Warning = Color(0xFFB26A00)
+val Danger = Color(0xFFBA1A1A)
+val SoftBlue = Color(0xFF3F6F8E)
