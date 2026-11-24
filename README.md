@@ -5,7 +5,7 @@
 [![InvenTree API](https://img.shields.io/badge/InvenTree-1.5.x%20%2F%20API%20530-146B54)](https://inventree.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-面向 [`erp.bi7khi.xyz`](https://erp.bi7khi.xyz) 的原生 Android 客户端，使用 Kotlin、Jetpack Compose、Material 3 实现。直接调用 InvenTree REST API，库存、库位、零件、账户数据与网页端实时一致。
+面向 InvenTree 的原生 Android 客户端，使用 Kotlin、Jetpack Compose、Material 3 实现。直接调用 InvenTree REST API，库存、库位、零件、账户数据与网页端实时一致。
 
 ## 下载
 
@@ -17,7 +17,7 @@
 | 文件 | `InvenTree-Mobile-1.2.0.apk` |
 | 包名 | `xyz.bi7khi.inventree.mobile` |
 | 系统要求 | Android 8.0+（API 26），targetSdk 35 |
-| 默认服务器 | `https://erp.bi7khi.xyz` |
+| 服务器 | 支持任意 InvenTree 1.5.x（API 530+），地址可在 App 内配置 |
 | APK SHA-256 | `9c716b97c2b0a460db6bfded6695037fc1a611335dcdab24aa3fa4bf77d6ec48` |
 
 > GitHub Release 附件是签名 APK；`dist/` 是本地构建产物，不纳入 Git。
@@ -117,7 +117,7 @@ BLE 打印页的布局对齐网页端 40×30mm 标签：
 
 ## 已有功能
 
-- 服务器选择，默认 `https://erp.bi7khi.xyz`，兼容子路径部署；
+- 服务器选择，兼容 HTTPS、内网 HTTP 和子路径部署；
 - 账户密码登录（换取 API Token）+ API Token 登录（SSO/2FA）；
 - Token 使用 Android Keystore AES-GCM 加密，密码不落盘；
 - 401 自动登出，重启自动登录；
@@ -157,7 +157,7 @@ adb install -r InvenTree-Mobile-1.2.0.apk
 
 - Android Emulator：Android 15 / API 35 / medium_phone
 - 本机 InvenTree：1.5.2 / API 530，`http://10.0.2.2:1337`
-- 生产域名：`https://erp.bi7khi.xyz`（TLS 探测通过）
+- HTTPS 生产服务器：TLS 探测通过
 
 已验证：
 

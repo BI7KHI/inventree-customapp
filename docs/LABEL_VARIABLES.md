@@ -51,7 +51,7 @@
 
 - `{qr}`：使用服务器条码（默认，推荐）。扫码后 InvenTree 能直接匹配对象。
 - `{url}`：网页详情链接，适合手机浏览器扫码打开。
-- 固定文本：如 `https://erp.bi7khi.xyz`。
+- 固定文本：如 `https://inventree.example.com`。
 - 任意变量组合：如 `{ipn}-{batch}`。
 
 ## 设计器操作

@@ -1,6 +1,6 @@
 # InvenTree Mobile 1.2.0
 
-面向 `https://erp.bi7khi.xyz` 的原生 Android 客户端，本次更新聚焦 BLE 实际打印校准和个性化主题。
+面向 InvenTree 的原生 Android 客户端，本次更新聚焦 BLE 实际打印校准和个性化主题。
 
 ## 重点更新
 
@@ -32,7 +32,7 @@
 adb install -r InvenTree-Mobile-1.2.0.apk
 ```
 
-3. 首次启动使用默认服务器 `https://erp.bi7khi.xyz`，用网页端同一账户登录。SSO/2FA 账户可切换 API Token 登录。
+3. 首次启动在服务器选择页填写你的 InvenTree 地址，用网页端同一账户登录。SSO/2FA 账户可切换 API Token 登录。
 
 可直接覆盖 1.1.0 / 1.0.0（同一签名，versionCode 3）。
 
