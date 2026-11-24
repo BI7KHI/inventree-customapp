@@ -245,7 +245,7 @@ fun LabelPrintScreen(
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .aspectRatio(currentDesign.widthMm / currentDesign.heightMm)
+                            .aspectRatio(bitmap.width.toFloat() / bitmap.height)
                             .background(Color.White, RoundedCornerShape(14.dp)),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -267,7 +267,7 @@ fun LabelPrintScreen(
                                 overflow = TextOverflow.Ellipsis,
                             )
                             Text(
-                                "${currentDesign.widthMm.toInt()} × ${currentDesign.heightMm.toInt()} mm · ${settings.dpi} dpi · ${currentDesign.name}",
+                                "${currentDesign.widthMm.toInt()} × ${currentDesign.heightMm.toInt()} mm · ${settings.dpi} dpi · 输出 ${"%.0f".format(bitmap.width * 25.4f / settings.dpi)} mm 宽",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )

@@ -13,12 +13,12 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 当前版本 | **1.2.0** |
-| 文件 | `InvenTree-Mobile-1.2.0.apk` |
+| 当前版本 | **1.2.1** |
+| 文件 | `InvenTree-Mobile-1.2.1.apk` |
 | 包名 | `xyz.bi7khi.inventree.mobile` |
 | 系统要求 | Android 8.0+（API 26），targetSdk 35 |
 | 服务器 | 支持任意 InvenTree 1.5.x（API 530+），地址可在 App 内配置 |
-| APK SHA-256 | `9c716b97c2b0a460db6bfded6695037fc1a611335dcdab24aa3fa4bf77d6ec48` |
+| APK SHA-256 | `55daf7e465269463e45ecf5d77b6b9e5b2c8638c767a31c9ce203b11b9352840` |
 
 > GitHub Release 附件是签名 APK；`dist/` 是本地构建产物，不纳入 Git。
 
@@ -38,13 +38,31 @@
 | --- | --- |
 | ![偏移校准](docs/screenshots/print-offsets.png) | ![BLE](docs/screenshots/ble-scan.png) |
 
+## 1.2.1 修复
+
+### 水平偏移 +6mm 时右侧/二维码被裁切
+
+**原因**：旧实现把内容在固定 40mm 宽画布内向右平移，右侧超出画布的部分被裁掉；二维码位于标签右侧，因此会被截断一半。
+
+**修复**：
+
+- 水平正偏移改为“左侧补白”：位图宽度随偏移增加，整张标签右移，右侧内容不再被裁切；
+- +6mm 时输出宽度为 46mm，预览中二维码完整；
+- 预览宽高比跟随实际输出位图；
+- 负偏移仍向左移动；垂直偏移仍在标签高度内移动。
+
+> 注意：左补白后的输出宽度大于标签纸宽度，打印机可打印宽度必须能覆盖（多数 203dpi 标签机打印头宽于 40mm）。若打印机物理打印头只有 40mm，硬件本身仍会裁切，需要改用打印机自身的原点设置或缩小版式。
+
+![+6mm 水平偏移预览](docs/screenshots/offset-6mm-preview.png)
+
 ## 1.2.0 新增
 
 ### BLE 水平/垂直偏移校准
 
 - 打印参数新增水平偏移、垂直偏移，范围 -15mm – +15mm，0.5mm 步进；
 - 正值向右/向下，负值向左/向上；
-- 偏移作用于整张标签（含边框），超出标签边界的部分会被裁切；
+- 水平正偏移通过左侧补白实现，不会裁切右侧二维码；负偏移向左移动；
+- 垂直偏移仍以标签边界裁切；
 - 预览立即显示偏移效果；
 - 与协议、DPI、份数、走纸、阈值、反色、BLE 块大小一起保存到本机，重启和下次打印继续生效；
 - “偏移归零”可一键恢复。
@@ -136,12 +154,12 @@ BLE 打印页的布局对齐网页端 40×30mm 标签：
 从 [Releases](https://github.com/BI7KHI/inventree-customapp/releases/latest) 下载 APK，传到手机后允许“安装未知应用”安装；或使用 adb：
 
 ```bash
-adb install -r InvenTree-Mobile-1.2.0.apk
+adb install -r InvenTree-Mobile-1.2.1.apk
 ```
 
 首次启动保留默认服务器，点击“连接服务器”，使用网页端同一账户登录。启用 SSO/2FA 的账户请切换到“API Token”，在网页端账户设置中生成 Token 后粘贴。
 
-升级时请保留同一签名；1.2.0 可直接覆盖 1.1.0 / 1.0.0。
+升级时请保留同一签名；1.2.1 可直接覆盖 1.2.0 / 1.1.0 / 1.0.0。
 
 ### 打印标签
 
@@ -169,7 +187,7 @@ adb install -r InvenTree-Mobile-1.2.0.apk
 - BLE 扫描权限申请、扫描界面、0 设备空状态；
 - 水平/垂直偏移 +1.0/+0.5mm 保存后重启仍保持；
 - 主题切换到珊瑚橙后首页/导航/按钮即时变色，重启保留；
-- 标签位图、偏移渲染与 ESC/POS/TSPL2 指令流的 4 项仪器测试通过；
+- 标签位图、偏移渲染与 ESC/POS/TSPL2 指令流的 5 项仪器测试通过；
 - JVM 单元测试 19 项通过；
 - Android Lint 0 error。
 
@@ -211,7 +229,7 @@ dist/                本地构建 APK（Git 忽略）
 - [BLE 打印与传输](docs/BLE_PRINTING.md)
 - [标签变量列表](docs/LABEL_VARIABLES.md)
 - [变更记录](CHANGELOG.md)
-- [1.2.0 Release Notes](docs/RELEASE_1.2.0.md)
+- [1.2.1 Release Notes](docs/RELEASE_1.2.1.md)
 
 ## 已知边界
 

@@ -9,6 +9,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.roundToInt
 import xyz.bi7khi.inventree.mobile.data.label.DefaultLabelDesigns
 import xyz.bi7khi.inventree.mobile.data.label.LabelPrintSettings
 import xyz.bi7khi.inventree.mobile.data.label.LabelProtocolEncoder
@@ -42,6 +43,17 @@ class LabelRenderingTest {
         val normal = LabelRenderer.render(design, values, 203)
         val shifted = LabelRenderer.render(design, values, 203, offsetXmm = 2.5f, offsetYmm = 1.5f)
         assertTrue("offset must change the rendered bitmap", !normal.sameAs(shifted))
+    }
+
+    @Test
+    fun positiveHorizontalOffsetPadsLeftWithoutShrinkingLabel() {
+        val design = DefaultLabelDesigns.forType(LabelTemplateType.STOCK)
+        val values = LabelRenderer.sampleValues(LabelTemplateType.STOCK)
+        val normal = LabelRenderer.render(design, values, 203)
+        val shifted = LabelRenderer.render(design, values, 203, offsetXmm = 6f)
+        val expectedExtra = (6f * 203f / 25.4f).roundToInt()
+        assertEquals(normal.width + expectedExtra, shifted.width)
+        assertEquals(normal.height, shifted.height)
     }
 
     @Test

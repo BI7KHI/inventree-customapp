@@ -11,6 +11,7 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 object LabelRenderer {
 
@@ -26,13 +27,18 @@ object LabelRenderer {
         val dotsPerMm = dpi / 25.4f
         val width = max(1, (design.widthMm * dotsPerMm).toInt())
         val height = max(1, (design.heightMm * dotsPerMm).toInt())
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val shiftX = (offsetXmm * dotsPerMm).roundToInt()
+        // Positive horizontal calibration shifts the label to the right. Add
+        // blank columns on the left instead of shifting inside a fixed-width
+        // canvas, otherwise right-side content (e.g. the QR code) is clipped.
+        val outputWidth = if (shiftX > 0) width + shiftX else width
+        val bitmap = Bitmap.createBitmap(outputWidth, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawColor(Color.WHITE)
 
         canvas.save()
-        canvas.clipRect(0f, 0f, width.toFloat(), height.toFloat())
-        canvas.translate(offsetXmm * dotsPerMm, offsetYmm * dotsPerMm)
+        canvas.clipRect(0f, 0f, outputWidth.toFloat(), height.toFloat())
+        canvas.translate(shiftX.toFloat(), offsetYmm * dotsPerMm)
 
         if (design.border) {
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
