@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -25,6 +27,7 @@ import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Refresh
@@ -63,6 +66,7 @@ import xyz.bi7khi.inventree.mobile.ui.components.GradientHero
 import xyz.bi7khi.inventree.mobile.ui.components.InitialAvatar
 import xyz.bi7khi.inventree.mobile.ui.components.InfoRow
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
+import xyz.bi7khi.inventree.mobile.ui.components.ThemeColorPickerDialog
 import xyz.bi7khi.inventree.mobile.util.UrlUtils
 
 @Composable
@@ -73,12 +77,15 @@ fun MoreScreen(
     onChangeServer: () -> Unit,
     onRefreshUser: () -> Unit,
     onOpenLabelDesigner: () -> Unit,
+    themeColor: Color,
+    onThemeColorChange: (Color) -> Unit,
 ) {
     StatusBarIcons(lightIcons = true)
     val context = LocalContext.current
     val user = session.user
     var serverInfo by remember { mutableStateOf<ServerInfo?>(null) }
     var showLogout by remember { mutableStateOf(false) }
+    var showThemePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         runCatching { repository.serverInfo() }.onSuccess { serverInfo = it }
@@ -196,6 +203,42 @@ fun MoreScreen(
 
             Spacer(Modifier.height(12.dp))
             AppCard {
+                SectionHeader("外观")
+                Spacer(Modifier.height(6.dp))
+                Surface(
+                    onClick = { showThemePicker = true },
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                    shape = RoundedCornerShape(14.dp),
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Outlined.Palette, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Spacer(Modifier.width(10.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("主题颜色", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                            Text(
+                                "应用到导航、按钮、首页渐变和强调元素",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Box(
+                            Modifier
+                                .size(30.dp)
+                                .background(themeColor, CircleShape),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("更改", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+            AppCard {
                 SectionHeader("标签打印")
                 Spacer(Modifier.height(6.dp))
                 Text(
@@ -262,6 +305,17 @@ fun MoreScreen(
                 modifier = Modifier.padding(bottom = 20.dp),
             )
         }
+    }
+
+    if (showThemePicker) {
+        ThemeColorPickerDialog(
+            initialColor = themeColor,
+            onApply = {
+                showThemePicker = false
+                onThemeColorChange(it)
+            },
+            onDismiss = { showThemePicker = false },
+        )
     }
 
     if (showLogout) {

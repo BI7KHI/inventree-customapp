@@ -70,6 +70,8 @@ private const val MORE = "more"
 fun MainNavigation(
     session: Session,
     repository: InvenTreeRepository,
+    themeColor: Color,
+    onThemeColorChange: (Color) -> Unit,
     onLogout: () -> Unit,
     onChangeServer: () -> Unit,
     onRefreshUser: () -> Unit,
@@ -224,6 +226,8 @@ fun MainNavigation(
                     onChangeServer = onChangeServer,
                     onRefreshUser = onRefreshUser,
                     onOpenLabelDesigner = { nav.navigate("label-editor/stock?id=-1") },
+                    themeColor = themeColor,
+                    onThemeColorChange = onThemeColorChange,
                 )
             }
 

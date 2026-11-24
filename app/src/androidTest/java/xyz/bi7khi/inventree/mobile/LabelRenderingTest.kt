@@ -36,6 +36,15 @@ class LabelRenderingTest {
     }
 
     @Test
+    fun offsetMovesRenderedLabelContent() {
+        val design = DefaultLabelDesigns.forType(LabelTemplateType.STOCK)
+        val values = LabelRenderer.sampleValues(LabelTemplateType.STOCK)
+        val normal = LabelRenderer.render(design, values, 203)
+        val shifted = LabelRenderer.render(design, values, 203, offsetXmm = 2.5f, offsetYmm = 1.5f)
+        assertTrue("offset must change the rendered bitmap", !normal.sameAs(shifted))
+    }
+
+    @Test
     fun escPosStreamHasSingleResetAndBitmapCommand() {
         val bitmap = testBitmap()
         val one = LabelProtocolEncoder.encode(

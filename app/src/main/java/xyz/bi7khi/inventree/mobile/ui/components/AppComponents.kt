@@ -50,9 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import xyz.bi7khi.inventree.mobile.ui.theme.BrandGreen
-import xyz.bi7khi.inventree.mobile.ui.theme.BrandGreenDark
-import xyz.bi7khi.inventree.mobile.ui.theme.BrandMint
+import xyz.bi7khi.inventree.mobile.ui.theme.blendWith
 import xyz.bi7khi.inventree.mobile.ui.theme.Danger
 import xyz.bi7khi.inventree.mobile.ui.theme.SoftBlue
 import xyz.bi7khi.inventree.mobile.ui.theme.Success
@@ -62,16 +60,17 @@ import xyz.bi7khi.inventree.mobile.ui.theme.Warning
 fun BrandMark(
     size: Dp = 56.dp,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = BrandGreen,
+    backgroundColor: Color? = null,
     iconColor: Color = Color.White,
 ) {
+    val background = backgroundColor ?: MaterialTheme.colorScheme.primary
     Box(
         modifier = modifier
             .size(size)
             .clip(RoundedCornerShape(size * 0.32f))
             .background(
                 Brush.linearGradient(
-                    listOf(backgroundColor, BrandGreenDark),
+                    listOf(background, background.blendWith(Color.Black, 0.45f)),
                 ),
             ),
         contentAlignment = Alignment.Center,
@@ -90,12 +89,18 @@ fun GradientHero(
     modifier: Modifier = Modifier,
     content: @Composable androidx.compose.foundation.layout.BoxScope.() -> Unit,
 ) {
+    val primary = MaterialTheme.colorScheme.primary
+    val accent = MaterialTheme.colorScheme.primaryContainer
     Box(
         modifier = modifier
             .fillMaxWidth()
             .background(
                 Brush.linearGradient(
-                    colors = listOf(BrandGreenDark, BrandGreen, Color(0xFF2D9875)),
+                    colors = listOf(
+                        primary.blendWith(Color.Black, 0.52f),
+                        primary,
+                        primary.blendWith(Color.White, 0.18f),
+                    ),
                     start = Offset.Zero,
                     end = Offset(1000f, 1200f),
                 ),
@@ -108,7 +113,7 @@ fun GradientHero(
                 center = Offset(size.width * 0.92f, size.height * 0.05f),
             )
             drawCircle(
-                color = BrandMint.copy(alpha = 0.08f),
+                color = accent.copy(alpha = 0.18f),
                 radius = size.minDimension * 0.35f,
                 center = Offset(size.width * 0.1f, size.height * 0.9f),
             )
@@ -157,7 +162,10 @@ fun InitialAvatar(name: String, size: Dp = 42.dp) {
             .clip(CircleShape)
             .background(
                 Brush.linearGradient(
-                    listOf(MaterialTheme.colorScheme.primaryContainer, BrandMint.copy(alpha = 0.9f)),
+                    listOf(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.65f),
+                    ),
                 ),
             ),
         contentAlignment = Alignment.Center,

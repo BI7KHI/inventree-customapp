@@ -5,6 +5,7 @@ import xyz.bi7khi.inventree.mobile.data.api.ApiClient
 import xyz.bi7khi.inventree.mobile.data.api.InvenTreeApi
 import xyz.bi7khi.inventree.mobile.data.api.InvenTreeRepository
 import xyz.bi7khi.inventree.mobile.data.local.SessionStore
+import xyz.bi7khi.inventree.mobile.data.local.ThemeStore
 
 class InvenTreeApplication : Application() {
 
@@ -19,6 +20,7 @@ class InvenTreeApplication : Application() {
 
 class AppContainer(application: Application) {
     val sessionStore = SessionStore(application)
+    val themeStore = ThemeStore(application)
 
     fun api(serverUrl: String, token: String?): InvenTreeApi =
         ApiClient.create(serverUrl, token)

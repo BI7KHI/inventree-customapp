@@ -2,13 +2,13 @@
 
 面向 `https://erp.bi7khi.xyz` 的原生 Android 客户端。使用 Kotlin、Jetpack Compose、Material 3 实现，直接调用 InvenTree REST API；库存、库位、零件、账户数据与网页端实时一致。
 
-**当前版本：1.1.0**
+**当前版本：1.2.0**
 
-- 安装包：`dist/InvenTree-Mobile-1.1.0.apk`
+- 安装包：`dist/InvenTree-Mobile-1.2.0.apk`
 - 包名：`xyz.bi7khi.inventree.mobile`
 - 支持：Android 8.0+（API 26），targetSdk 35
 - 默认服务器：`https://erp.bi7khi.xyz`
-- APK SHA-256：`2007362142d7ec3b21c5d629ca66689b38729530085b7a2dd9c3fe03fc617eca`
+- APK SHA-256：`9c716b97c2b0a460db6bfded6695037fc1a611335dcdab24aa3fa4bf77d6ec48`
 
 | 首页 | 零件 |
 | --- | --- |
@@ -18,9 +18,30 @@
 | --- | --- |
 | ![库位折叠](docs/screenshots/locations-collapsed.png) | ![标签打印](docs/screenshots/label-print.png) |
 
-| 标签设计器 | BLE 扫描 |
+| 标签设计器 | 主题颜色 |
 | --- | --- |
-| ![标签设计器](docs/screenshots/label-editor.png) | ![BLE](docs/screenshots/ble-scan.png) |
+| ![标签设计器](docs/screenshots/label-editor.png) | ![主题颜色](docs/screenshots/theme-picker.png) |
+
+## 1.2.0 新增
+
+### BLE 水平/垂直偏移校准
+
+- 打印参数新增水平偏移、垂直偏移，范围 -15mm – +15mm，0.5mm 步进；
+- 正值向右/向下，负值向左/向上；
+- 偏移作用于整张标签（含边框），超出标签边界的部分会被裁切；
+- 预览立即显示偏移效果；
+- 与协议、DPI、份数、走纸、阈值、反色、BLE 块大小一起保存到本机，重启和下次打印继续生效；
+- “偏移归零”可一键恢复。
+
+### 主题颜色
+
+“我的 → 外观 → 主题颜色”：
+
+- 12 个常用色块：森林绿、青碧、海洋蓝、靛青、葡萄紫、玫瑰红、珊瑚橙、琥珀、石墨、松柏、赭石、午夜；
+- 自定义 HSV 取色：色相条、饱和度/明度二维面板、十六进制输入；
+- 应用后立即刷新导航、按钮、首页/登录渐变、强调元素和状态色；
+- 主题色使用 DataStore 持久化，重启后保留；
+- 支持“恢复默认”森林绿。
 
 ## 1.1.0 新增
 
@@ -97,7 +118,7 @@ BLE 打印页的布局对齐网页端 40×30mm 标签：
 ## 安装
 
 ```bash
-adb install -r dist/InvenTree-Mobile-1.1.0.apk
+adb install -r dist/InvenTree-Mobile-1.2.0.apk
 ```
 
 或把 APK 传到手机，允许“安装未知应用”后安装。
@@ -128,7 +149,9 @@ adb install -r dist/InvenTree-Mobile-1.1.0.apk
 - 标签打印预览：40×30mm、QR、标题/信息/底栏与网页模板一致；
 - 标签设计器选择二维码、修改二维码内容、保存、返回打印页后预览立即更新；
 - BLE 扫描权限申请、扫描界面、0 设备空状态；
-- 标签位图与 ESC/POS/TSPL2 指令流的 3 项仪器测试通过；
+- 水平/垂直偏移 +1.0/+0.5mm 保存后重启仍保持；
+- 主题切换到珊瑚橙后首页/导航/按钮即时变色，重启保留；
+- 标签位图、偏移渲染与 ESC/POS/TSPL2 指令流的 4 项仪器测试通过；
 - JVM 单元测试 19 项通过；
 - Android Lint 0 error。
 

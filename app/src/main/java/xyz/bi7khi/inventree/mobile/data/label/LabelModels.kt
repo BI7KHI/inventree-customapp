@@ -46,6 +46,8 @@ data class LabelPrintSettings(
     val dpi: Int = 203,
     val copies: Int = 1,
     val feedMm: Float = 0f,
+    val offsetXmm: Float = 0f,
+    val offsetYmm: Float = 0f,
     val threshold: Int = 128,
     val invert: Boolean = false,
     val writeChunkSize: Int = 180,

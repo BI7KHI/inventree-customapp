@@ -28,6 +28,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.BluetoothConnected
+import androidx.compose.material.icons.outlined.Remove
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Refresh
@@ -185,8 +187,20 @@ fun LabelPrintScreen(
     }
     val currentDesign = design!!
     val doc = document!!
-    val bitmap: Bitmap = remember(currentDesign, doc, settings.dpi) {
-        LabelRenderer.render(currentDesign, doc.values, settings.dpi)
+    val bitmap: Bitmap = remember(
+        currentDesign,
+        doc,
+        settings.dpi,
+        settings.offsetXmm,
+        settings.offsetYmm,
+    ) {
+        LabelRenderer.render(
+            currentDesign,
+            doc.values,
+            settings.dpi,
+            settings.offsetXmm,
+            settings.offsetYmm,
+        )
     }
     val connected = bleState is BlePrinterState.Connected
 
@@ -356,6 +370,25 @@ fun LabelPrintScreen(
                         }
                     }
                     Spacer(Modifier.height(10.dp))
+                    OffsetStepper(
+                        label = "水平偏移",
+                        value = settings.offsetXmm,
+                        onChange = { settings = settings.copy(offsetXmm = it) },
+                    )
+                    OffsetStepper(
+                        label = "垂直偏移",
+                        value = settings.offsetYmm,
+                        onChange = { settings = settings.copy(offsetYmm = it) },
+                    )
+                    if (settings.offsetXmm != 0f || settings.offsetYmm != 0f) {
+                        TextButton(
+                            onClick = {
+                                settings = settings.copy(offsetXmm = 0f, offsetYmm = 0f)
+                            },
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
+                        ) { Text("偏移归零", style = MaterialTheme.typography.labelSmall) }
+                    }
+                    Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         OutlinedTextField(
                             value = settings.copies.toString(),
@@ -548,5 +581,44 @@ fun LabelPrintScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun OffsetStepper(
+    label: String,
+    value: Float,
+    onChange: (Float) -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "${if (value > 0f) "+" else ""}%.1f mm".format(value),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        IconButton(
+            onClick = { onChange((value - 0.5f).coerceIn(-15f, 15f)) },
+        ) { Icon(Icons.Outlined.Remove, contentDescription = "减小") }
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+            shape = RoundedCornerShape(10.dp),
+        ) {
+            Text(
+                "%.1f".format(value),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            )
+        }
+        IconButton(
+            onClick = { onChange((value + 0.5f).coerceIn(-15f, 15f)) },
+        ) { Icon(Icons.Outlined.Add, contentDescription = "增大") }
     }
 }

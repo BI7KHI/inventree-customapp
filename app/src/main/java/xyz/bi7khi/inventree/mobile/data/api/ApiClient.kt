@@ -26,7 +26,7 @@ import xyz.bi7khi.inventree.mobile.util.UrlUtils
 
 object ApiClient {
 
-    const val USER_AGENT = "InvenTreeMobile/1.1 (Android)"
+    const val USER_AGENT = "InvenTreeMobile/1.2 (Android)"
 
     /** Emits when an authenticated request is rejected with HTTP 401. */
     val unauthorizedEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 1)

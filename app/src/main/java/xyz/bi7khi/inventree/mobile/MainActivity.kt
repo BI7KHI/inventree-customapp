@@ -18,23 +18,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
+import xyz.bi7khi.inventree.mobile.data.local.ThemeSettings
 import xyz.bi7khi.inventree.mobile.ui.SessionUiState
 import xyz.bi7khi.inventree.mobile.ui.SessionViewModel
 import xyz.bi7khi.inventree.mobile.ui.components.BrandMark
 import xyz.bi7khi.inventree.mobile.ui.navigation.MainNavigation
 import xyz.bi7khi.inventree.mobile.ui.screens.LoginScreen
 import xyz.bi7khi.inventree.mobile.ui.screens.ServerSetupScreen
-import xyz.bi7khi.inventree.mobile.ui.theme.BrandGreen
-import xyz.bi7khi.inventree.mobile.ui.theme.BrandGreenDark
-import xyz.bi7khi.inventree.mobile.ui.theme.BrandMint
 import xyz.bi7khi.inventree.mobile.ui.theme.InvenTreeTheme
+import xyz.bi7khi.inventree.mobile.ui.theme.blendWith
 
 class MainActivity : ComponentActivity() {
 
@@ -45,7 +47,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            InvenTreeTheme {
+            val container = (application as InvenTreeApplication).container
+            val themeSettings by container.themeStore.settings
+                .collectAsStateWithLifecycle(initialValue = ThemeSettings())
+            val scope = rememberCoroutineScope()
+            InvenTreeTheme(seedColor = Color(themeSettings.seedArgb)) {
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 when (val current = state) {
                     SessionUiState.Loading -> LaunchScreen()
@@ -59,6 +65,10 @@ class MainActivity : ComponentActivity() {
                     is SessionUiState.SignedIn -> MainNavigation(
                         session = current.session,
                         repository = current.repository,
+                        themeColor = Color(themeSettings.seedArgb),
+                        onThemeColorChange = { color ->
+                            scope.launch { container.themeStore.save(color.toArgb()) }
+                        },
                         onLogout = { viewModel.logout() },
                         onChangeServer = { viewModel.switchServer() },
                         onRefreshUser = { viewModel.refreshUser() },
@@ -72,10 +82,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun LaunchScreen() {
     xyz.bi7khi.inventree.mobile.ui.StatusBarIcons(lightIcons = true)
+    val primary = MaterialTheme.colorScheme.primary
     Box(
         Modifier
             .fillMaxSize()
-            .background(Brush.linearGradient(listOf(BrandGreenDark, BrandGreen))),
+            .background(
+                Brush.linearGradient(
+                    listOf(primary.blendWith(Color.Black, 0.55f), primary),
+                ),
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -89,7 +104,7 @@ private fun LaunchScreen() {
             Text(
                 "移动库存",
                 style = MaterialTheme.typography.bodyMedium,
-                color = BrandMint,
+                color = MaterialTheme.colorScheme.primaryContainer,
             )
             Spacer(Modifier.height(28.dp))
             CircularProgressIndicator(

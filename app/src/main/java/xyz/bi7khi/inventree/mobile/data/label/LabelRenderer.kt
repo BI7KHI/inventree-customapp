@@ -20,6 +20,8 @@ object LabelRenderer {
         design: LabelDesign,
         values: Map<String, String>,
         dpi: Int = 203,
+        offsetXmm: Float = 0f,
+        offsetYmm: Float = 0f,
     ): Bitmap {
         val dotsPerMm = dpi / 25.4f
         val width = max(1, (design.widthMm * dotsPerMm).toInt())
@@ -27,6 +29,10 @@ object LabelRenderer {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawColor(Color.WHITE)
+
+        canvas.save()
+        canvas.clipRect(0f, 0f, width.toFloat(), height.toFloat())
+        canvas.translate(offsetXmm * dotsPerMm, offsetYmm * dotsPerMm)
 
         if (design.border) {
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -45,6 +51,7 @@ object LabelRenderer {
                 LabelElementType.QR -> drawQr(canvas, element, values, width, height, dotsPerMm)
             }
         }
+        canvas.restore()
         return bitmap
     }
 
