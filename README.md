@@ -8,6 +8,7 @@
 - 包名：`xyz.bi7khi.inventree.mobile`
 - 支持：Android 8.0+（API 26），targetSdk 35
 - 默认服务器：`https://erp.bi7khi.xyz`
+- APK SHA-256：`2007362142d7ec3b21c5d629ca66689b38729530085b7a2dd9c3fe03fc617eca`
 
 | 首页 | 零件 |
 | --- | --- |
