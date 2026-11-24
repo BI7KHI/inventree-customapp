@@ -69,6 +69,7 @@ import xyz.bi7khi.inventree.mobile.ui.components.AppCard
 import xyz.bi7khi.inventree.mobile.ui.components.AuthenticatedPartImage
 import xyz.bi7khi.inventree.mobile.ui.components.ConfirmDialog
 import xyz.bi7khi.inventree.mobile.ui.components.ErrorState
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.FullScreenLoading
 import xyz.bi7khi.inventree.mobile.ui.components.InfoRow
 import xyz.bi7khi.inventree.mobile.ui.components.InvenTreeTopBar
@@ -135,13 +136,11 @@ fun StockDetailScreen(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
-            TopAppBar(
-                title = { Text("库存详情") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
-                    }
-                },
+            FieldTopBar(
+                title = "库存详情",
+                subtitle = current.partName,
+                code = "STOCK // RECORD",
+                onBack = onBack,
                 actions = {
                     IconButton(onClick = onPrint) {
                         Icon(Icons.Outlined.Print, contentDescription = "打印标签")
@@ -165,7 +164,6 @@ fun StockDetailScreen(
                         Icon(Icons.Outlined.DeleteOutline, contentDescription = "删除")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
     ) { padding ->

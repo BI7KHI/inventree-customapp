@@ -7,13 +7,43 @@
 
 面向 InvenTree 的原生 Android 客户端，使用 Kotlin、Jetpack Compose、Material 3 实现。直接调用 InvenTree REST API，库存、库位、零件、账户数据与网页端实时一致。
 
+> **分支说明**：当前为 `end` 分支的 **Field Style** 界面实验（`1.3.0-field`）。功能与稳定版 1.2.1 对齐，视觉与交互已重做；`main` 分支和 GitHub Release 仍为 1.2.1。
+
+## Field Style（end 分支）
+
+工业编辑风 + 近未来现场终端：暖纸白/碳黑中性底、信号黄/青、切角卡片、细网格、HUD 微标签、扫描线、警示斜纹与短促转场。
+
+设计参考公开的工业编辑风视觉语言，**不包含人物立绘、官方 Logo、游戏截图或官方字体**。
+
+| 首页 | 库存 |
+| --- | --- |
+| ![Field 首页](docs/screenshots/field-home.png) | ![Field 库存](docs/screenshots/field-stock.png) |
+
+| 零件 | 我的 |
+| --- | --- |
+| ![Field 零件](docs/screenshots/field-parts.png) | ![Field 我的](docs/screenshots/field-more.png) |
+
+| 接入终端 | 信号色 |
+| --- | --- |
+| ![Field 登录](docs/screenshots/field-login.png) | ![Field 信号色](docs/screenshots/field-signal-picker.png) |
+
+| 暗色主题 |
+| --- |
+| ![Field 暗色](docs/screenshots/field-home-dark.png) |
+
+- 首页 HUD、登录/节点接入、库存/库位、零件、详情、表单、标签打印和“我的”页统一重绘；
+- 底部导航、页面转场、卡片按压、统计数字、Hero 扫描线、扫描准星与状态脉冲动效；
+- 信号色：谷地黄、武陵青、重燃赤、浸蓝 + 12 组工业色 + HSV 自定义；
+- 亮/暗模式共用中性色，只切换信号色；滚动时状态栏图标自动明暗；
+- 设计说明与实现索引：[`docs/FIELD_STYLE.md`](docs/FIELD_STYLE.md)。
+
 ## 下载
 
 [**⬇️ 下载最新 Release**](https://github.com/BI7KHI/inventree-customapp/releases/latest)
 
 | 项目 | 值 |
 | --- | --- |
-| 当前版本 | **1.2.1** |
+| 稳定版 | **1.2.1** |
 | 文件 | `InvenTree-Mobile-1.2.1.apk` |
 | 包名 | `xyz.bi7khi.inventree.mobile` |
 | 系统要求 | Android 8.0+（API 26），targetSdk 35 |
@@ -21,6 +51,8 @@
 | APK SHA-256 | `55daf7e465269463e45ecf5d77b6b9e5b2c8638c767a31c9ce203b11b9352840` |
 
 > GitHub Release 附件是签名 APK；`dist/` 是本地构建产物，不纳入 Git。
+
+### 稳定版界面
 
 | 首页 | 零件 |
 | --- | --- |
@@ -219,13 +251,14 @@ app/src/main/java/xyz/bi7khi/inventree/mobile/
   data/label/        标签模型、渲染器、BLE 传输、ESC/POS/TSPL2
   ui/screens/        登录、首页、库存、库位、零件、扫码、打印、设计器
   ui/navigation/     路由与底栏
-  ui/components/     图片、选择器、二维码、通用组件
+  ui/components/     图片、选择器、二维码、Field 组件与通用组件
 docs/                截图、BLE 与标签变量说明
 dist/                本地构建 APK（Git 忽略）
 ```
 
 ## 文档
 
+- [Field Style 设计说明](docs/FIELD_STYLE.md)
 - [BLE 打印与传输](docs/BLE_PRINTING.md)
 - [标签变量列表](docs/LABEL_VARIABLES.md)
 - [变更记录](CHANGELOG.md)

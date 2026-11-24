@@ -15,7 +15,8 @@ data class ThemeSettings(
     val seedArgb: Int = DEFAULT_SEED,
 ) {
     companion object {
-        const val DEFAULT_SEED = 0xFF146B54.toInt()
+        const val DEFAULT_SEED = 0xFFF2E900.toInt()
+        const val LEGACY_DEFAULT_SEED = 0xFF146B54.toInt()
     }
 }
 
@@ -27,7 +28,12 @@ class ThemeStore(private val context: Context) {
             else throw error
         }
         .map { prefs ->
-            ThemeSettings(prefs[KEY_SEED] ?: ThemeSettings.DEFAULT_SEED)
+            val stored = prefs[KEY_SEED]
+            val seed = when (stored) {
+                null, ThemeSettings.LEGACY_DEFAULT_SEED -> ThemeSettings.DEFAULT_SEED
+                else -> stored
+            }
+            ThemeSettings(seed)
         }
 
     suspend fun save(seedArgb: Int) {

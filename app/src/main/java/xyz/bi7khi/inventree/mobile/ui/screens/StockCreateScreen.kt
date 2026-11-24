@@ -52,6 +52,7 @@ import xyz.bi7khi.inventree.mobile.data.api.StockCreateRequest
 import xyz.bi7khi.inventree.mobile.data.api.toUserMessage
 import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.AppCard
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.LocationPickerDialog
 import xyz.bi7khi.inventree.mobile.ui.components.PartPickerDialog
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
@@ -97,14 +98,11 @@ fun StockCreateScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = { Text("新建库存项") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+            FieldTopBar(
+                title = "新建库存项",
+                subtitle = "STOCK INTAKE // NEW LOT",
+                code = "STOCK // IN",
+                onBack = onBack,
             )
         },
     ) { padding ->

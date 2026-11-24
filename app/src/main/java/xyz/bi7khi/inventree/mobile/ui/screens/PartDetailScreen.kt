@@ -61,6 +61,7 @@ import xyz.bi7khi.inventree.mobile.ui.components.AuthenticatedPartImage
 import xyz.bi7khi.inventree.mobile.ui.components.ConfirmDialog
 import xyz.bi7khi.inventree.mobile.ui.components.EmptyState
 import xyz.bi7khi.inventree.mobile.ui.components.ErrorState
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.FullScreenLoading
 import xyz.bi7khi.inventree.mobile.ui.components.InfoRow
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
@@ -119,19 +120,16 @@ fun PartDetailScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = { Text("零件详情") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
-                    }
-                },
+            FieldTopBar(
+                title = "零件详情",
+                subtitle = p.IPN?.takeIf { it.isNotBlank() } ?: p.name,
+                code = "PART // RECORD",
+                onBack = onBack,
                 actions = {
                     IconButton(onClick = onPrint) { Icon(Icons.Outlined.Print, contentDescription = "打印标签") }
                     IconButton(onClick = onEdit) { Icon(Icons.Outlined.Edit, contentDescription = "编辑") }
                     IconButton(onClick = { showDelete = true }) { Icon(Icons.Outlined.DeleteOutline, contentDescription = "删除") }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
     ) { padding ->

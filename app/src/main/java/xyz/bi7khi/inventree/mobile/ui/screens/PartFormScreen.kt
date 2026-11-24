@@ -56,6 +56,7 @@ import xyz.bi7khi.inventree.mobile.data.api.toUserMessage
 import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.AppCard
 import xyz.bi7khi.inventree.mobile.ui.components.CategoryPickerDialog
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.FullScreenLoading
 import xyz.bi7khi.inventree.mobile.ui.components.LocationPickerDialog
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
@@ -140,12 +141,11 @@ fun PartFormScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = { Text(if (isEdit) "编辑零件" else "新建零件") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.Outlined.ArrowBack, contentDescription = "返回") }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+            FieldTopBar(
+                title = if (isEdit) "编辑零件" else "新建零件",
+                subtitle = "PART RECORD // SPECIFICATION",
+                code = "PART // FORM",
+                onBack = onBack,
             )
         },
     ) { padding ->

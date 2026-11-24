@@ -5,14 +5,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
@@ -32,11 +36,15 @@ import xyz.bi7khi.inventree.mobile.data.local.ThemeSettings
 import xyz.bi7khi.inventree.mobile.ui.SessionUiState
 import xyz.bi7khi.inventree.mobile.ui.SessionViewModel
 import xyz.bi7khi.inventree.mobile.ui.components.BrandMark
+import xyz.bi7khi.inventree.mobile.ui.components.FieldHazardStrip
+import xyz.bi7khi.inventree.mobile.ui.components.FieldHero
+import xyz.bi7khi.inventree.mobile.ui.components.FieldMicroLabel
+import xyz.bi7khi.inventree.mobile.ui.components.FieldPulseDot
 import xyz.bi7khi.inventree.mobile.ui.navigation.MainNavigation
 import xyz.bi7khi.inventree.mobile.ui.screens.LoginScreen
 import xyz.bi7khi.inventree.mobile.ui.screens.ServerSetupScreen
 import xyz.bi7khi.inventree.mobile.ui.theme.InvenTreeTheme
-import xyz.bi7khi.inventree.mobile.ui.theme.blendWith
+import xyz.bi7khi.inventree.mobile.ui.theme.LocalFieldPalette
 
 class MainActivity : ComponentActivity() {
 
@@ -82,36 +90,66 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun LaunchScreen() {
     xyz.bi7khi.inventree.mobile.ui.StatusBarIcons(lightIcons = true)
-    val primary = MaterialTheme.colorScheme.primary
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(
-                Brush.linearGradient(
-                    listOf(primary.blendWith(Color.Black, 0.55f), primary),
-                ),
-            ),
-        contentAlignment = Alignment.Center,
+    val palette = LocalFieldPalette.current
+    FieldHero(
+        modifier = Modifier.fillMaxSize(),
+        showGhost = false,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            BrandMark(size = 76.dp, backgroundColor = Color.White.copy(alpha = 0.16f))
-            Spacer(Modifier.height(22.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 26.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            BrandMark(size = 88.dp)
+            Spacer(Modifier.height(24.dp))
+            FieldMicroLabel("INVENTREE // MOBILE TERMINAL", color = palette.signal)
+            Spacer(Modifier.height(6.dp))
             Text(
-                "InvenTree",
+                "物资管控终端",
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White,
             )
-            Text(
-                "移动库存",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primaryContainer,
-            )
+            Spacer(Modifier.height(5.dp))
+            FieldMicroLabel("END FIELD STYLE // INITIALIZING", color = Color.White.copy(alpha = 0.44f))
             Spacer(Modifier.height(28.dp))
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = Color.White,
-                strokeWidth = 2.dp,
-            )
+            Box(contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(54.dp),
+                    strokeWidth = 1.5.dp,
+                    color = palette.signal,
+                )
+                FieldPulseDot(color = palette.signal, size = 5.dp)
+            }
+            Spacer(Modifier.height(20.dp))
+            BootLine("01", "KEYSTORE", "OK", palette)
+            Spacer(Modifier.height(5.dp))
+            BootLine("02", "SESSION", "VERIFY", palette)
+            Spacer(Modifier.height(5.dp))
+            BootLine("03", "API LINK", "STANDBY", palette)
         }
+        FieldHazardStrip(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            color = palette.signal.copy(alpha = 0.7f),
+        )
+    }
+}
+
+@Composable
+private fun BootLine(code: String, label: String, value: String, palette: xyz.bi7khi.inventree.mobile.ui.theme.FieldPalette) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 28.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FieldMicroLabel(code, color = palette.signal.copy(alpha = 0.65f))
+        Spacer(Modifier.width(10.dp))
+        FieldMicroLabel(label, color = Color.White.copy(alpha = 0.50f))
+        Spacer(Modifier.weight(1f))
+        FieldMicroLabel(value, color = Color.White.copy(alpha = 0.72f))
     }
 }

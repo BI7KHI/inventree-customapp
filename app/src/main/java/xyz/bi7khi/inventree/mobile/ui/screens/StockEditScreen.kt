@@ -49,6 +49,7 @@ import xyz.bi7khi.inventree.mobile.data.api.toUserMessage
 import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.AppCard
 import xyz.bi7khi.inventree.mobile.ui.components.ErrorState
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.FullScreenLoading
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
 import xyz.bi7khi.inventree.mobile.ui.components.StatusPickerDialog
@@ -111,24 +112,11 @@ fun StockEditScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("编辑库存")
-                        Text(
-                            item!!.partName,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
-                    }
-                },
+            FieldTopBar(
+                title = "编辑库存",
+                subtitle = item!!.partName,
+                code = "STOCK // EDIT",
+                onBack = onBack,
                 actions = {
                     IconButton(
                         onClick = {
@@ -159,7 +147,6 @@ fun StockEditScreen(
                         else Icon(Icons.Outlined.Check, contentDescription = "保存")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
     ) { padding ->

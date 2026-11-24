@@ -1,9 +1,9 @@
 package xyz.bi7khi.inventree.mobile.ui.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,42 +16,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CloudOff
-import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import xyz.bi7khi.inventree.mobile.ui.theme.blendWith
 import xyz.bi7khi.inventree.mobile.ui.theme.Danger
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCarbon
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCut
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCutSmall
+import xyz.bi7khi.inventree.mobile.ui.theme.LocalFieldPalette
 import xyz.bi7khi.inventree.mobile.ui.theme.SoftBlue
 import xyz.bi7khi.inventree.mobile.ui.theme.Success
 import xyz.bi7khi.inventree.mobile.ui.theme.Warning
@@ -63,23 +54,20 @@ fun BrandMark(
     backgroundColor: Color? = null,
     iconColor: Color = Color.White,
 ) {
-    val background = backgroundColor ?: MaterialTheme.colorScheme.primary
+    val palette = LocalFieldPalette.current
+    val background = backgroundColor ?: FieldCarbon
     Box(
         modifier = modifier
             .size(size)
-            .clip(RoundedCornerShape(size * 0.32f))
-            .background(
-                Brush.linearGradient(
-                    listOf(background, background.blendWith(Color.Black, 0.45f)),
-                ),
-            ),
+            .clip(FieldCutSmall)
+            .background(background)
+            .border(1.dp, palette.signal.copy(alpha = 0.75f), FieldCutSmall),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            imageVector = Icons.Outlined.Inventory2,
-            contentDescription = "InvenTree",
-            tint = iconColor,
-            modifier = Modifier.size(size * 0.56f),
+        FieldGlyph(
+            modifier = Modifier.size(size * 0.60f),
+            color = iconColor,
+            accent = palette.signal,
         )
     }
 }
@@ -89,103 +77,66 @@ fun GradientHero(
     modifier: Modifier = Modifier,
     content: @Composable androidx.compose.foundation.layout.BoxScope.() -> Unit,
 ) {
-    val primary = MaterialTheme.colorScheme.primary
-    val accent = MaterialTheme.colorScheme.primaryContainer
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(
-                        primary.blendWith(Color.Black, 0.52f),
-                        primary,
-                        primary.blendWith(Color.White, 0.18f),
-                    ),
-                    start = Offset.Zero,
-                    end = Offset(1000f, 1200f),
-                ),
-            ),
-    ) {
-        Canvas(Modifier.fillMaxSize()) {
-            drawCircle(
-                color = Color.White.copy(alpha = 0.06f),
-                radius = size.minDimension * 0.55f,
-                center = Offset(size.width * 0.92f, size.height * 0.05f),
-            )
-            drawCircle(
-                color = accent.copy(alpha = 0.18f),
-                radius = size.minDimension * 0.35f,
-                center = Offset(size.width * 0.1f, size.height * 0.9f),
-            )
-        }
-        content()
-    }
+    FieldHero(
+        modifier = modifier,
+        content = content,
+    )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvenTreeTopBar(
     title: String,
     onBack: (() -> Unit)? = null,
     actions: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {},
 ) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-        navigationIcon = {
-            if (onBack != null) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
-                }
-            }
-        },
+    FieldTopBar(
+        title = title,
+        subtitle = "INVENTREE MOBILE",
+        code = "SYS // LOCAL",
+        onBack = onBack,
         actions = actions,
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = MaterialTheme.colorScheme.surface,
-        ),
     )
 }
 
 @Composable
 fun InitialAvatar(name: String, size: Dp = 42.dp) {
+    val palette = LocalFieldPalette.current
     val initials = name.trim().take(2).uppercase().ifBlank { "IT" }
     Box(
         modifier = Modifier
             .size(size)
             .clip(CircleShape)
-            .background(
-                Brush.linearGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.65f),
-                    ),
-                ),
-            ),
+            .background(FieldCarbon)
+            .border(1.dp, palette.signal.copy(alpha = 0.85f), CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = initials,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = palette.signal,
             fontWeight = FontWeight.Bold,
             fontSize = (size.value * 0.34f).sp,
+            letterSpacing = 0.5.sp,
         )
     }
 }
 
 @Composable
 fun FullScreenLoading(message: String = "正在加载…") {
+    val palette = LocalFieldPalette.current
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator(strokeWidth = 3.dp)
+            Box(contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(52.dp),
+                    strokeWidth = 1.5.dp,
+                    color = palette.signalText,
+                )
+                FieldMicroLabel("SYNC", color = palette.signalText)
+            }
             Spacer(Modifier.height(18.dp))
-            Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(message, style = MaterialTheme.typography.bodyMedium, color = palette.muted)
+            Spacer(Modifier.height(5.dp))
+            FieldMicroLabel("FETCHING REMOTE MANIFEST", color = palette.muted.copy(alpha = 0.65f))
         }
     }
 }
@@ -196,6 +147,7 @@ fun ErrorState(
     modifier: Modifier = Modifier,
     onRetry: (() -> Unit)? = null,
 ) {
+    val palette = LocalFieldPalette.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -205,21 +157,24 @@ fun ErrorState(
     ) {
         Box(
             Modifier
-                .size(72.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.errorContainer),
+                .size(74.dp)
+                .clip(FieldCut)
+                .background(palette.danger.copy(alpha = 0.12f))
+                .border(1.dp, palette.danger.copy(alpha = 0.55f), FieldCut),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 Icons.Outlined.CloudOff,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onErrorContainer,
+                tint = palette.danger,
                 modifier = Modifier.size(32.dp),
             )
         }
         Spacer(Modifier.height(18.dp))
+        FieldMicroLabel("LINK // FAULT", color = palette.danger)
+        Spacer(Modifier.height(6.dp))
         Text(
-            "出了点问题",
+            "连接中断",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
@@ -227,15 +182,15 @@ fun ErrorState(
         Text(
             message,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = palette.muted,
             textAlign = TextAlign.Center,
         )
         if (onRetry != null) {
             Spacer(Modifier.height(18.dp))
-            Button(onClick = onRetry) {
+            Button(onClick = onRetry, shape = FieldCutSmall) {
                 Icon(Icons.Outlined.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("重试")
+                Text("重新连接")
             }
         }
     }
@@ -250,6 +205,7 @@ fun EmptyState(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
 ) {
+    val palette = LocalFieldPalette.current
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -259,24 +215,27 @@ fun EmptyState(
         Box(
             Modifier
                 .size(76.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)),
+                .clip(FieldCut)
+                .background(palette.panelAlt)
+                .border(1.dp, palette.line, FieldCut),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(34.dp))
+            Icon(icon, contentDescription = null, tint = palette.signalText, modifier = Modifier.size(34.dp))
         }
         Spacer(Modifier.height(16.dp))
+        FieldMicroLabel("NO DATA // 00", color = palette.muted)
+        Spacer(Modifier.height(5.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(6.dp))
         Text(
             description,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = palette.muted,
             textAlign = TextAlign.Center,
         )
         if (actionLabel != null && onAction != null) {
             Spacer(Modifier.height(16.dp))
-            Button(onClick = onAction) { Text(actionLabel) }
+            Button(onClick = onAction, shape = FieldCutSmall) { Text(actionLabel) }
         }
     }
 }
@@ -288,20 +247,13 @@ fun SectionHeader(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f),
-        )
-        if (actionLabel != null && onAction != null) {
-            TextButton(onClick = onAction) { Text(actionLabel) }
-        }
-    }
+    FieldSectionHeader(
+        title = title,
+        modifier = modifier,
+        code = "S",
+        actionLabel = actionLabel,
+        onAction = onAction,
+    )
 }
 
 @Composable
@@ -310,21 +262,17 @@ fun AppCard(
     onClick: (() -> Unit)? = null,
     content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
 ) {
-    val base = modifier
-        .fillMaxWidth()
-        .animateContentSize()
-    Card(
-        modifier = if (onClick != null) base.clickable(onClick = onClick) else base,
-        shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
-    ) {
-        Column(Modifier.padding(16.dp), content = content)
-    }
+    FieldCard(
+        modifier = modifier.animateContentSize(),
+        onClick = onClick,
+        contentPadding = 16.dp,
+        content = content,
+    )
 }
 
 @Composable
 fun StatusBadge(status: Int?, text: String?) {
+    val palette = LocalFieldPalette.current
     val label = text?.takeIf { it.isNotBlank() } ?: when (status) {
         10 -> "正常"
         50 -> "需关注"
@@ -341,11 +289,12 @@ fun StatusBadge(status: Int?, text: String?) {
         50 -> Warning
         85 -> SoftBlue
         55, 60, 65, 70, 75 -> Danger
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
+        else -> palette.muted
     }
     Surface(
-        color = color.copy(alpha = 0.12f),
-        shape = RoundedCornerShape(50),
+        color = color.copy(alpha = 0.11f),
+        shape = FieldCutSmall,
+        border = BorderStroke(1.dp, color.copy(alpha = 0.38f)),
     ) {
         Text(
             label,
@@ -358,9 +307,11 @@ fun StatusBadge(status: Int?, text: String?) {
 
 @Composable
 fun QuantityPill(quantity: Double, units: String? = null, compact: Boolean = false) {
+    val palette = LocalFieldPalette.current
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-        shape = RoundedCornerShape(12.dp),
+        color = palette.signal.copy(alpha = 0.13f),
+        shape = FieldCutSmall,
+        border = BorderStroke(1.dp, palette.signalText.copy(alpha = 0.22f)),
     ) {
         Row(
             Modifier.padding(horizontal = if (compact) 8.dp else 10.dp, vertical = if (compact) 3.dp else 6.dp),
@@ -370,13 +321,13 @@ fun QuantityPill(quantity: Double, units: String? = null, compact: Boolean = fal
                 text = formatQty(quantity),
                 style = if (compact) MaterialTheme.typography.labelLarge else MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = palette.signalText,
             )
             if (!units.isNullOrBlank()) {
                 Text(
                     " $units",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
+                    color = palette.signalText.copy(alpha = 0.72f),
                 )
             }
         }
@@ -399,9 +350,9 @@ fun InfoRow(
     ) {
         Text(
             label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(92.dp),
+            style = MaterialTheme.typography.labelMedium,
+            color = LocalFieldPalette.current.muted,
+            modifier = Modifier.width(88.dp),
         )
         Text(
             value,
@@ -428,6 +379,7 @@ fun ConfirmDialog(
         confirmButton = {
             Button(
                 onClick = onConfirm,
+                shape = FieldCutSmall,
                 colors = if (destructive) ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 else ButtonDefaults.buttonColors(),
             ) { Text(confirmLabel) }

@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -30,8 +28,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,9 +52,13 @@ import xyz.bi7khi.inventree.mobile.ui.components.AppCard
 import xyz.bi7khi.inventree.mobile.ui.components.AuthenticatedPartImage
 import xyz.bi7khi.inventree.mobile.ui.components.EmptyState
 import xyz.bi7khi.inventree.mobile.ui.components.ErrorState
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.formatQty
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCut
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCutSmall
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldMono
+import xyz.bi7khi.inventree.mobile.ui.theme.LocalFieldPalette
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PartListScreen(
     repository: InvenTreeRepository,
@@ -98,28 +98,25 @@ fun PartListScreen(
         loading = false
     }
 
+    val palette = LocalFieldPalette.current
+
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = palette.paper,
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("零件库", style = MaterialTheme.typography.titleLarge)
-                        Text(
-                            "$total 个零件 · 与网页端同步",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+            FieldTopBar(
+                title = "零件库",
+                subtitle = "$total 个零件 · 与网页端同步",
+                code = "PARTS // INDEX",
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onNewPart,
+                containerColor = palette.signal,
+                contentColor = palette.onSignal,
+                shape = FieldCut,
                 icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
-                text = { Text("新建零件") },
+                text = { Text("新建零件", style = MaterialTheme.typography.labelLarge) },
             )
         },
     ) { padding ->
@@ -221,14 +218,15 @@ fun PartCard(
     part: PartDto,
     onClick: () -> Unit,
 ) {
+    val palette = LocalFieldPalette.current
     val imageUrls = repository.partImageUrls(part.thumbnail, part.image)
     AppCard(onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 Modifier
                     .size(58.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)),
+                    .clip(FieldCutSmall)
+                    .background(palette.signal.copy(alpha = 0.09f)),
                 contentAlignment = Alignment.Center,
             ) {
                 AuthenticatedPartImage(
@@ -239,7 +237,7 @@ fun PartCard(
                         Icon(
                             Icons.Outlined.Inventory2,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = palette.signalText,
                             modifier = Modifier.size(28.dp),
                         )
                     },
@@ -267,25 +265,26 @@ fun PartCard(
                 Spacer(Modifier.height(7.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
-                        shape = RoundedCornerShape(50),
+                        color = palette.signal.copy(alpha = 0.10f),
+                        shape = FieldCutSmall,
                     ) {
                         Text(
                             "库存 ${formatQty(part.total_in_stock ?: 0.0)}",
                             style = MaterialTheme.typography.labelSmall,
+                            fontFamily = FieldMono,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = palette.signalText,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         )
                     }
                     val minimum = part.minimum_stock ?: 0.0
                     if (minimum > 0 && (part.total_in_stock ?: 0.0) < minimum) {
                         Spacer(Modifier.width(6.dp))
-                        Icon(Icons.Outlined.WarningAmber, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(13.dp))
+                        Icon(Icons.Outlined.WarningAmber, contentDescription = null, tint = palette.danger, modifier = Modifier.size(13.dp))
                         Text(
                             "低于最小 ${formatQty(minimum)}",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.error,
+                            color = palette.danger,
                         )
                     }
                 }

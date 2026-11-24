@@ -90,8 +90,12 @@ import xyz.bi7khi.inventree.mobile.data.api.InvenTreeRepository
 import xyz.bi7khi.inventree.mobile.data.api.toUserMessage
 import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.BrandMark
+import xyz.bi7khi.inventree.mobile.ui.components.FieldMicroLabel
+import xyz.bi7khi.inventree.mobile.ui.components.FieldPulseDot
 import xyz.bi7khi.inventree.mobile.ui.scan.BarcodeAnalyzer
-import xyz.bi7khi.inventree.mobile.ui.theme.BrandMint
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCut
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCutSmall
+import xyz.bi7khi.inventree.mobile.ui.theme.LocalFieldPalette
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,6 +107,7 @@ fun ScanScreen(
     onOpenLocation: (Int) -> Unit,
     onSearch: (String) -> Unit,
 ) {
+    val palette = LocalFieldPalette.current
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val mainHandler = remember { Handler(Looper.getMainLooper()) }
@@ -230,8 +235,9 @@ fun ScanScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
                     onClick = onBack,
-                    shape = CircleShape,
+                    shape = FieldCutSmall,
                     color = Color.Black.copy(alpha = 0.35f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.22f)),
                 ) {
                     Box(Modifier.size(42.dp), contentAlignment = Alignment.Center) {
                         Icon(Icons.Outlined.Close, contentDescription = "关闭", tint = Color.White)
@@ -239,6 +245,11 @@ fun ScanScreen(
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        FieldPulseDot(color = palette.signal, size = 5.dp)
+                        Spacer(Modifier.width(6.dp))
+                        FieldMicroLabel("OPTICAL SCAN // 04", color = palette.signal)
+                    }
                     Text("扫描条码", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Text(
                         "支持 QR、Data Matrix、Code 128 等",
@@ -250,14 +261,15 @@ fun ScanScreen(
                     onClick = {
                         torch = !torch
                     },
-                    shape = CircleShape,
-                    color = if (torch) Color.White else Color.Black.copy(alpha = 0.35f),
+                    shape = FieldCutSmall,
+                    color = if (torch) palette.signal else Color.Black.copy(alpha = 0.35f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.22f)),
                 ) {
                     Box(Modifier.size(42.dp), contentAlignment = Alignment.Center) {
                         Icon(
                             if (torch) Icons.Outlined.FlashOn else Icons.Outlined.FlashOff,
                             contentDescription = "手电筒",
-                            tint = if (torch) Color.Black else Color.White,
+                            tint = if (torch) palette.onSignal else Color.White,
                         )
                     }
                 }
@@ -274,6 +286,12 @@ fun ScanScreen(
                     ScanFrame()
                 }
                 Spacer(Modifier.height(18.dp))
+                FieldMicroLabel(
+                    if (processing) "DECODING // PLEASE WAIT" else "ALIGN BARCODE // AUTO DETECT",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = palette.signal,
+                )
+                Spacer(Modifier.height(4.dp))
                 Text(
                     if (processing) "正在解析条码…" else "将条码放入框内，自动识别",
                     color = Color.White,
@@ -288,7 +306,7 @@ fun ScanScreen(
                             .align(Alignment.CenterHorizontally)
                             .size(22.dp),
                         strokeWidth = 2.dp,
-                        color = BrandMint,
+                        color = palette.signal,
                     )
                 }
             } else {
@@ -320,7 +338,7 @@ fun ScanScreen(
             ) {
                 FilledTonalButton(
                     onClick = { showManual = true },
-                    shape = RoundedCornerShape(50),
+                    shape = FieldCutSmall,
                 ) {
                     Icon(Icons.Outlined.Keyboard, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(7.dp))
@@ -341,7 +359,7 @@ fun ScanScreen(
                     onValueChange = { code = it },
                     label = { Text("条码内容") },
                     singleLine = true,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = FieldCutSmall,
                 )
             },
             confirmButton = {
@@ -363,7 +381,7 @@ fun ScanScreen(
         ModalBottomSheet(
             onDismissRequest = { resumeScanning() },
             sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = palette.panel,
         ) {
             Column(
                 Modifier
@@ -372,6 +390,8 @@ fun ScanScreen(
                     .padding(bottom = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                FieldMicroLabel("SCAN RESULT // DECODED", color = palette.signalText)
+                Spacer(Modifier.height(10.dp))
                 when {
                     processing -> {
                         CircularProgressIndicator(Modifier.size(30.dp), strokeWidth = 2.5.dp)
@@ -435,8 +455,8 @@ fun ScanScreen(
                                 Text(result.message, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
                                 Spacer(Modifier.height(8.dp))
                                 Surface(
-                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                    shape = RoundedCornerShape(10.dp),
+                                    color = palette.panelAlt,
+                                    shape = FieldCutSmall,
                                 ) {
                                     Text(
                                         result.barcode,
@@ -484,6 +504,7 @@ fun ScanScreen(
 
 @Composable
 private fun ScanFrame() {
+    val palette = LocalFieldPalette.current
     val transition = rememberInfiniteTransition(label = "scan-line")
     val progress by transition.animateFloat(
         initialValue = 0f,
@@ -495,34 +516,69 @@ private fun ScanFrame() {
         label = "scan-progress",
     )
     Canvas(Modifier.fillMaxSize()) {
-        val frameWidth = size.width * 0.78f
+        val frameWidth = size.width * 0.80f
         val frameHeight = frameWidth
         val left = (size.width - frameWidth) / 2f
         val top = (size.height - frameHeight) / 2f
-        val corner = 30.dp.toPx()
-        val stroke = 3.dp.toPx()
-        val color = Color.White
-        // top-left
-        drawLine(color, Offset(left, top), Offset(left + corner, top), stroke, StrokeCap.Round)
-        drawLine(color, Offset(left, top), Offset(left, top + corner), stroke, StrokeCap.Round)
-        // top-right
-        drawLine(color, Offset(left + frameWidth, top), Offset(left + frameWidth - corner, top), stroke, StrokeCap.Round)
-        drawLine(color, Offset(left + frameWidth, top), Offset(left + frameWidth, top + corner), stroke, StrokeCap.Round)
-        // bottom-left
-        drawLine(color, Offset(left, top + frameHeight), Offset(left + corner, top + frameHeight), stroke, StrokeCap.Round)
-        drawLine(color, Offset(left, top + frameHeight), Offset(left, top + frameHeight - corner), stroke, StrokeCap.Round)
-        // bottom-right
-        drawLine(color, Offset(left + frameWidth, top + frameHeight), Offset(left + frameWidth - corner, top + frameHeight), stroke, StrokeCap.Round)
-        drawLine(color, Offset(left + frameWidth, top + frameHeight), Offset(left + frameWidth, top + frameHeight - corner), stroke, StrokeCap.Round)
-        // scanning line
+        val right = left + frameWidth
+        val bottom = top + frameHeight
+        val corner = 27.dp.toPx()
+        val stroke = 2.2.dp.toPx()
+
+        // Reticle grid.
+        val grid = frameWidth / 8f
+        for (i in 1 until 8) {
+            drawLine(
+                color = Color.White.copy(alpha = 0.055f),
+                start = Offset(left + grid * i, top),
+                end = Offset(left + grid * i, bottom),
+                strokeWidth = 1f,
+            )
+            drawLine(
+                color = Color.White.copy(alpha = 0.055f),
+                start = Offset(left, top + grid * i),
+                end = Offset(right, top + grid * i),
+                strokeWidth = 1f,
+            )
+        }
+
+        // Frame corners: cyan outer, signal inner.
+        val c = palette.cyan
+        val s = palette.signal
+        listOf(
+            Triple(Offset(left, top), Offset(left + corner, top), Offset(left, top + corner)),
+            Triple(Offset(right, top), Offset(right - corner, top), Offset(right, top + corner)),
+            Triple(Offset(left, bottom), Offset(left + corner, bottom), Offset(left, bottom - corner)),
+            Triple(Offset(right, bottom), Offset(right - corner, bottom), Offset(right, bottom - corner)),
+        ).forEach { (origin, horizontal, vertical) ->
+            drawLine(c, origin, horizontal, stroke, StrokeCap.Square)
+            drawLine(c, origin, vertical, stroke, StrokeCap.Square)
+        }
+        // Small inner brackets.
+        val tick = 9.dp.toPx()
+        drawLine(s, Offset(left + corner + 6.dp.toPx(), top), Offset(left + corner + 6.dp.toPx() + tick, top), 1.5.dp.toPx())
+        drawLine(s, Offset(right - corner - 6.dp.toPx(), bottom), Offset(right - corner - 6.dp.toPx() - tick, bottom), 1.5.dp.toPx())
+
+        // Midline ticks.
+        drawLine(s.copy(alpha = 0.55f), Offset(left - 10.dp.toPx(), top + frameHeight / 2), Offset(left, top + frameHeight / 2), 1.dp.toPx())
+        drawLine(s.copy(alpha = 0.55f), Offset(right, top + frameHeight / 2), Offset(right + 10.dp.toPx(), top + frameHeight / 2), 1.dp.toPx())
+
+        // Scanning beam with a subtle glow.
         val lineY = top + frameHeight * progress
         drawLine(
-            color = BrandMint,
-            start = Offset(left + 12.dp.toPx(), lineY),
-            end = Offset(left + frameWidth - 12.dp.toPx(), lineY),
-            strokeWidth = 2.dp.toPx(),
-            cap = StrokeCap.Round,
+            color = s.copy(alpha = 0.16f),
+            start = Offset(left + 2.dp.toPx(), lineY),
+            end = Offset(right - 2.dp.toPx(), lineY),
+            strokeWidth = 8.dp.toPx(),
         )
+        drawLine(
+            color = s,
+            start = Offset(left + 8.dp.toPx(), lineY),
+            end = Offset(right - 8.dp.toPx(), lineY),
+            strokeWidth = 1.8.dp.toPx(),
+        )
+        drawCircle(s, radius = 2.4.dp.toPx(), center = Offset(left + 8.dp.toPx(), lineY))
+        drawCircle(s, radius = 2.4.dp.toPx(), center = Offset(right - 8.dp.toPx(), lineY))
     }
 }
 
@@ -531,15 +587,20 @@ private fun ResultIcon(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     error: Boolean = false,
 ) {
+    val palette = LocalFieldPalette.current
     Surface(
-        shape = CircleShape,
-        color = if (error) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
+        shape = FieldCut,
+        color = if (error) palette.danger.copy(alpha = 0.10f) else palette.signal.copy(alpha = 0.10f),
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            if (error) palette.danger.copy(alpha = 0.45f) else palette.signalText.copy(alpha = 0.30f),
+        ),
     ) {
         Box(Modifier.size(68.dp), contentAlignment = Alignment.Center) {
             Icon(
                 icon,
                 contentDescription = null,
-                tint = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                tint = if (error) palette.danger else palette.signalText,
                 modifier = Modifier.size(32.dp),
             )
         }
@@ -553,10 +614,12 @@ private fun PermissionCard(
     onRequest: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
+    val palette = LocalFieldPalette.current
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surface,
+        shape = FieldCut,
+        color = palette.panel,
+        border = androidx.compose.foundation.BorderStroke(1.dp, palette.line),
     ) {
         Column(
             Modifier.padding(24.dp),
@@ -564,17 +627,23 @@ private fun PermissionCard(
         ) {
             BrandMark(size = 54.dp)
             Spacer(Modifier.height(14.dp))
+            FieldMicroLabel("CAMERA // PERMISSION REQUIRED", color = palette.signalText)
+            Spacer(Modifier.height(5.dp))
             Text("需要相机权限", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(6.dp))
             Text(
                 if (denied) "相机启动失败。请检查权限，或手动输入条码。"
                 else "授权相机后即可扫描 InvenTree 二维码与一维条码。",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = palette.muted,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(16.dp))
-            Button(onClick = onRequest, modifier = Modifier.fillMaxWidth()) { Text("授予相机权限") }
+            Button(
+                onClick = onRequest,
+                modifier = Modifier.fillMaxWidth(),
+                shape = FieldCutSmall,
+            ) { Text("授予相机权限") }
             TextButton(onClick = onOpenSettings) { Text("打开系统设置") }
         }
     }

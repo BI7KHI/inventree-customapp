@@ -82,6 +82,7 @@ import xyz.bi7khi.inventree.mobile.data.label.LabelTemplateType
 import xyz.bi7khi.inventree.mobile.data.label.loadLabelDocument
 import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.AppCard
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.FullScreenLoading
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
 
@@ -138,22 +139,11 @@ fun LabelEditorScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("标签设计器")
-                        Text(
-                            "${type.displayName} · 拖动预览中的元素调整位置",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
-                    }
-                },
+            FieldTopBar(
+                title = "标签设计器",
+                subtitle = "${type.displayName} · 拖动预览中的元素调整位置",
+                code = "LABEL // DESIGN",
+                onBack = onBack,
                 actions = {
                     IconButton(
                         onClick = {
@@ -172,7 +162,6 @@ fun LabelEditorScreen(
                         else Icon(Icons.Outlined.Check, contentDescription = "保存")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
     ) { padding ->

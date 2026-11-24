@@ -2,8 +2,8 @@ package xyz.bi7khi.inventree.mobile.ui.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ExpandMore
@@ -33,7 +32,6 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Warehouse
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -46,8 +44,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -74,12 +70,16 @@ import xyz.bi7khi.inventree.mobile.ui.components.AppCard
 import xyz.bi7khi.inventree.mobile.ui.components.AuthenticatedPartImage
 import xyz.bi7khi.inventree.mobile.ui.components.EmptyState
 import xyz.bi7khi.inventree.mobile.ui.components.ErrorState
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.LocationPickerDialog
 import xyz.bi7khi.inventree.mobile.ui.components.QuantityPill
 import xyz.bi7khi.inventree.mobile.ui.components.StatusBadge
 import xyz.bi7khi.inventree.mobile.ui.components.formatQty
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCut
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCutSmall
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldMono
+import xyz.bi7khi.inventree.mobile.ui.theme.LocalFieldPalette
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StockHubScreen(
     repository: InvenTreeRepository,
@@ -91,36 +91,41 @@ fun StockHubScreen(
     onNewLocation: () -> Unit,
 ) {
     StatusBarIcons(lightIcons = false)
+    val palette = LocalFieldPalette.current
     var tab by rememberSaveable { mutableStateOf(initialTab) }
     var refreshKey by remember { mutableStateOf(0) }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = palette.paper,
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("库存与仓储", style = MaterialTheme.typography.titleLarge)
-                        Text(
-                            if (tab == 0) "在库物料、批次与序列号" else "库位结构与仓储空间",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            FieldTopBar(
+                title = "库存与仓储",
+                subtitle = if (tab == 0) "在库物料、批次与序列号" else "库位结构与仓储空间",
+                code = "STOCK // FIELD",
+                actions = {
+                    IconButton(onClick = { refreshKey++ }) {
+                        Icon(
+                            Icons.Outlined.Refresh,
+                            contentDescription = "刷新",
+                            tint = palette.signalText,
                         )
                     }
                 },
-                actions = {
-                    IconButton(onClick = { refreshKey++ }) {
-                        Icon(Icons.Outlined.Refresh, contentDescription = "刷新")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { if (tab == 0) onNewStock() else onNewLocation() },
+                containerColor = palette.signal,
+                contentColor = palette.onSignal,
+                shape = FieldCut,
                 icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
-                text = { Text(if (tab == 0) "新建库存" else "新建库位") },
+                text = {
+                    Text(
+                        if (tab == 0) "新建库存" else "新建库位",
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                },
             )
         },
     ) { padding ->
@@ -131,8 +136,11 @@ fun StockHubScreen(
         ) {
             TabRow(
                 selectedTabIndex = tab,
-                containerColor = MaterialTheme.colorScheme.background,
-                divider = {},
+                containerColor = palette.paper,
+                contentColor = palette.signalText,
+                divider = {
+                    Box(Modifier.fillMaxWidth().height(1.dp).background(palette.line))
+                },
             ) {
                 Tab(
                     selected = tab == 0,
@@ -337,13 +345,14 @@ fun StockItemCard(
     repository: InvenTreeRepository,
     onClick: () -> Unit,
 ) {
+    val palette = LocalFieldPalette.current
     AppCard(onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 Modifier
                     .size(52.dp)
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)),
+                    .clip(FieldCutSmall)
+                    .background(palette.signal.copy(alpha = 0.09f)),
                 contentAlignment = Alignment.Center,
             ) {
                 AuthenticatedPartImage(
@@ -416,14 +425,16 @@ fun StockItemCard(
 
 @Composable
 private fun MetaChip(text: String) {
+    val palette = LocalFieldPalette.current
     Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        shape = RoundedCornerShape(50),
+        color = palette.panelAlt,
+        shape = FieldCutSmall,
     ) {
         Text(
             text,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontFamily = FieldMono,
+            color = palette.muted,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -591,6 +602,7 @@ private fun LocationCard(
     onClick: () -> Unit,
     onToggle: () -> Unit,
 ) {
+    val palette = LocalFieldPalette.current
     val rotation by animateFloatAsState(
         targetValue = if (expanded) 0f else -90f,
         label = "location-chevron",
@@ -598,9 +610,9 @@ private fun LocationCard(
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 0.5.dp,
+        shape = FieldCut,
+        color = palette.panel,
+        border = BorderStroke(1.dp, palette.line),
     ) {
         Row(
             Modifier.padding(start = 14.dp, top = 10.dp, bottom = 10.dp, end = 6.dp),
@@ -610,18 +622,17 @@ private fun LocationCard(
             Box(
                 Modifier
                     .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(FieldCutSmall)
                     .background(
-                        if (location.structural) MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.55f)
-                        else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+                        if (location.structural) palette.panelAlt
+                        else palette.signal.copy(alpha = 0.09f),
                     ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     if (location.structural) Icons.Outlined.Folder else Icons.Outlined.Place,
                     contentDescription = null,
-                    tint = if (location.structural) MaterialTheme.colorScheme.tertiary
-                    else MaterialTheme.colorScheme.primary,
+                    tint = if (location.structural) palette.muted else palette.signalText,
                     modifier = Modifier.size(21.dp),
                 )
             }
@@ -679,20 +690,38 @@ fun OutlinedSearchField(
     placeholder: String,
     modifier: Modifier = Modifier,
 ) {
+    val palette = LocalFieldPalette.current
     androidx.compose.material3.OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
         placeholder = { Text(placeholder, style = MaterialTheme.typography.bodyMedium) },
-        leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
+        leadingIcon = {
+            Icon(
+                Icons.Outlined.Search,
+                contentDescription = null,
+                tint = palette.signalText,
+                modifier = Modifier.size(20.dp),
+            )
+        },
         trailingIcon = if (value.isNotEmpty()) {
             {
                 IconButton(onClick = { onValueChange("") }) {
-                    Text("×", style = MaterialTheme.typography.titleMedium)
+                    Text("×", style = MaterialTheme.typography.titleMedium, color = palette.muted)
                 }
             }
-        } else null,
+        } else {
+            {
+                Text(
+                    "SEARCH",
+                    fontFamily = FieldMono,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = palette.muted.copy(alpha = 0.55f),
+                    modifier = Modifier.padding(end = 12.dp),
+                )
+            }
+        },
         singleLine = true,
-        shape = RoundedCornerShape(16.dp),
+        shape = FieldCutSmall,
     )
 }
