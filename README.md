@@ -1,14 +1,26 @@
 # InvenTree CustomApp
 
-面向 `https://erp.bi7khi.xyz` 的原生 Android 客户端。使用 Kotlin、Jetpack Compose、Material 3 实现，直接调用 InvenTree REST API；库存、库位、零件、账户数据与网页端实时一致。
+[![Latest Release](https://img.shields.io/github/v/release/BI7KHI/inventree-customapp?display_name=tag&sort=semver)](https://github.com/BI7KHI/inventree-customapp/releases/latest)
+[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
+[![InvenTree API](https://img.shields.io/badge/InvenTree-1.5.x%20%2F%20API%20530-146B54)](https://inventree.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**当前版本：1.2.0**
+面向 [`erp.bi7khi.xyz`](https://erp.bi7khi.xyz) 的原生 Android 客户端，使用 Kotlin、Jetpack Compose、Material 3 实现。直接调用 InvenTree REST API，库存、库位、零件、账户数据与网页端实时一致。
 
-- 安装包：`dist/InvenTree-Mobile-1.2.0.apk`
-- 包名：`xyz.bi7khi.inventree.mobile`
-- 支持：Android 8.0+（API 26），targetSdk 35
-- 默认服务器：`https://erp.bi7khi.xyz`
-- APK SHA-256：`9c716b97c2b0a460db6bfded6695037fc1a611335dcdab24aa3fa4bf77d6ec48`
+## 下载
+
+[**⬇️ 下载最新 Release**](https://github.com/BI7KHI/inventree-customapp/releases/latest)
+
+| 项目 | 值 |
+| --- | --- |
+| 当前版本 | **1.2.0** |
+| 文件 | `InvenTree-Mobile-1.2.0.apk` |
+| 包名 | `xyz.bi7khi.inventree.mobile` |
+| 系统要求 | Android 8.0+（API 26），targetSdk 35 |
+| 默认服务器 | `https://erp.bi7khi.xyz` |
+| APK SHA-256 | `9c716b97c2b0a460db6bfded6695037fc1a611335dcdab24aa3fa4bf77d6ec48` |
+
+> GitHub Release 附件是签名 APK；`dist/` 是本地构建产物，不纳入 Git。
 
 | 首页 | 零件 |
 | --- | --- |
@@ -21,6 +33,10 @@
 | 标签设计器 | 主题颜色 |
 | --- | --- |
 | ![标签设计器](docs/screenshots/label-editor.png) | ![主题颜色](docs/screenshots/theme-picker.png) |
+
+| 偏移校准 | BLE 扫描 |
+| --- | --- |
+| ![偏移校准](docs/screenshots/print-offsets.png) | ![BLE](docs/screenshots/ble-scan.png) |
 
 ## 1.2.0 新增
 
@@ -117,13 +133,15 @@ BLE 打印页的布局对齐网页端 40×30mm 标签：
 
 ## 安装
 
+从 [Releases](https://github.com/BI7KHI/inventree-customapp/releases/latest) 下载 APK，传到手机后允许“安装未知应用”安装；或使用 adb：
+
 ```bash
-adb install -r dist/InvenTree-Mobile-1.2.0.apk
+adb install -r InvenTree-Mobile-1.2.0.apk
 ```
 
-或把 APK 传到手机，允许“安装未知应用”后安装。
-
 首次启动保留默认服务器，点击“连接服务器”，使用网页端同一账户登录。启用 SSO/2FA 的账户请切换到“API Token”，在网页端账户设置中生成 Token 后粘贴。
+
+升级时请保留同一签名；1.2.0 可直接覆盖 1.1.0 / 1.0.0。
 
 ### 打印标签
 
@@ -160,6 +178,7 @@ adb install -r dist/InvenTree-Mobile-1.2.0.apk
 ## 构建
 
 ```bash
+git clone https://github.com/BI7KHI/inventree-customapp.git
 cd inventree-customapp
 echo 'sdk.dir=/path/to/android-sdk' > local.properties
 
@@ -168,6 +187,8 @@ echo 'sdk.dir=/path/to/android-sdk' > local.properties
 ./gradlew :app:connectedDebugAndroidTest   # 需要模拟器/真机
 ./gradlew :app:assembleRelease
 ```
+
+Release 签名使用本地 keystore，不进入仓库；只构建 Debug 或自行配置 `keystore.properties`。
 
 签名密钥不进入 Git；`keystore.properties` 指向本地 keystore。升级安装时需使用同一签名。
 
@@ -182,8 +203,15 @@ app/src/main/java/xyz/bi7khi/inventree/mobile/
   ui/navigation/     路由与底栏
   ui/components/     图片、选择器、二维码、通用组件
 docs/                截图、BLE 与标签变量说明
-dist/                交付 APK
+dist/                本地构建 APK（Git 忽略）
 ```
+
+## 文档
+
+- [BLE 打印与传输](docs/BLE_PRINTING.md)
+- [标签变量列表](docs/LABEL_VARIABLES.md)
+- [变更记录](CHANGELOG.md)
+- [1.2.0 Release Notes](docs/RELEASE_1.2.0.md)
 
 ## 已知边界
 
@@ -200,3 +228,7 @@ dist/                交付 APK
 - 不记录 `Authorization` 头；
 - 所有写操作走 InvenTree 官方 API，权限与审计由服务器执行；
 - 图片请求只向当前 InvenTree 服务器附加 Token。
+
+## License
+
+本项目使用 [MIT License](LICENSE)。
