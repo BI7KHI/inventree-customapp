@@ -92,6 +92,7 @@ import xyz.bi7khi.inventree.mobile.data.label.loadLabelDocument
 import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.AppCard
 import xyz.bi7khi.inventree.mobile.ui.components.ErrorState
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTopBar
 import xyz.bi7khi.inventree.mobile.ui.components.FullScreenLoading
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
 
@@ -208,28 +209,16 @@ fun LabelPrintScreen(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("打印标签")
-                        Text(
-                            doc.title,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
-                    }
-                },
+            FieldTopBar(
+                title = "打印标签",
+                subtitle = doc.title,
+                code = "LABEL // PRINT",
+                onBack = onBack,
                 actions = {
                     IconButton(onClick = onEditDesign) {
                         Icon(Icons.Outlined.Edit, contentDescription = "编辑标签")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
         },
     ) { padding ->

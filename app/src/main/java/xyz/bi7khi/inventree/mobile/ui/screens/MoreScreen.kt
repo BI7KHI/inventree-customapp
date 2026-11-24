@@ -2,6 +2,7 @@ package xyz.bi7khi.inventree.mobile.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,26 +17,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ExitToApp
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Sync
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -43,12 +36,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -62,11 +57,17 @@ import xyz.bi7khi.inventree.mobile.data.api.Session
 import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.AppCard
 import xyz.bi7khi.inventree.mobile.ui.components.ConfirmDialog
+import xyz.bi7khi.inventree.mobile.ui.components.FieldMicroLabel
+import xyz.bi7khi.inventree.mobile.ui.components.FieldPulseDot
+import xyz.bi7khi.inventree.mobile.ui.components.FieldTag
 import xyz.bi7khi.inventree.mobile.ui.components.GradientHero
 import xyz.bi7khi.inventree.mobile.ui.components.InitialAvatar
 import xyz.bi7khi.inventree.mobile.ui.components.InfoRow
 import xyz.bi7khi.inventree.mobile.ui.components.SectionHeader
 import xyz.bi7khi.inventree.mobile.ui.components.ThemeColorPickerDialog
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCutSmall
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldMono
+import xyz.bi7khi.inventree.mobile.ui.theme.LocalFieldPalette
 import xyz.bi7khi.inventree.mobile.util.UrlUtils
 
 @Composable
@@ -80,9 +81,12 @@ fun MoreScreen(
     themeColor: Color,
     onThemeColorChange: (Color) -> Unit,
 ) {
-    StatusBarIcons(lightIcons = true)
+    val palette = LocalFieldPalette.current
     val context = LocalContext.current
     val user = session.user
+    val scrollState = rememberScrollState()
+    val isAtTop by remember { derivedStateOf { scrollState.value < 250 } }
+    StatusBarIcons(lightIcons = isAtTop)
     var serverInfo by remember { mutableStateOf<ServerInfo?>(null) }
     var showLogout by remember { mutableStateOf(false) }
     var showThemePicker by remember { mutableStateOf(false) }
@@ -94,14 +98,14 @@ fun MoreScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(scrollState)
+            .background(palette.paper)
             .padding(bottom = 100.dp),
     ) {
         GradientHero(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(252.dp),
+                .height(272.dp),
         ) {
             Column(
                 Modifier
@@ -110,6 +114,8 @@ fun MoreScreen(
                     .padding(22.dp),
                 verticalArrangement = Arrangement.Bottom,
             ) {
+                FieldMicroLabel("OPERATOR PROFILE // 04", color = palette.signal)
+                Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     InitialAvatar(user.displayName, size = 66.dp)
                     Spacer(Modifier.width(14.dp))
@@ -139,11 +145,18 @@ fun MoreScreen(
                     }
                 }
                 Spacer(Modifier.height(14.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     if (user.is_superuser) RoleChip("超级管理员")
                     else if (user.is_staff) RoleChip("管理员")
                     else RoleChip("普通账户")
-                    RoleChip("在线同步")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        FieldPulseDot(size = 5.dp)
+                        Spacer(Modifier.width(5.dp))
+                        FieldTag("SYNC ONLINE", color = palette.signal)
+                    }
                 }
             }
         }
@@ -207,8 +220,9 @@ fun MoreScreen(
                 Spacer(Modifier.height(6.dp))
                 Surface(
                     onClick = { showThemePicker = true },
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
-                    shape = RoundedCornerShape(14.dp),
+                    color = palette.signal.copy(alpha = 0.06f),
+                    shape = FieldCutSmall,
+                    border = BorderStroke(1.dp, palette.signalText.copy(alpha = 0.22f)),
                 ) {
                     Row(
                         Modifier
@@ -216,24 +230,41 @@ fun MoreScreen(
                             .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Outlined.Palette, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Outlined.Palette, contentDescription = null, tint = palette.signalText)
                         Spacer(Modifier.width(10.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("主题颜色", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                            Text("信号色 / SIGNAL COLOR", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                             Text(
-                                "应用到导航、按钮、首页渐变和强调元素",
+                                "切换工业界面中的信号、选中态与警示强调",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = palette.muted,
                             )
                         }
                         Box(
                             Modifier
-                                .size(30.dp)
-                                .background(themeColor, CircleShape),
+                                .size(28.dp)
+                                .clip(FieldCutSmall)
+                                .background(themeColor)
+                                .then(
+                                    Modifier.background(
+                                        Color.Transparent,
+                                    ),
+                                ),
                         )
                         Spacer(Modifier.width(8.dp))
-                        Text("更改", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                        Text("更改", style = MaterialTheme.typography.labelMedium, color = palette.signalText)
                     }
+                }
+                Spacer(Modifier.height(10.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FieldPulseDot(size = 5.dp)
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        "FIELD STYLE // END INTERFACE",
+                        fontFamily = FieldMono,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = palette.muted,
+                    )
                 }
             }
 
@@ -261,20 +292,17 @@ fun MoreScreen(
             }
 
             Spacer(Modifier.height(12.dp))
-            Card(
-                shape = RoundedCornerShape(22.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
-            ) {
-                Row(Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
-                    Icon(Icons.Outlined.Security, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            AppCard {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+                    Icon(Icons.Outlined.Security, contentDescription = null, tint = palette.signalText)
                     Spacer(Modifier.width(12.dp))
-                    Column {
-                        Text("安全说明", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                    Column(Modifier.weight(1f)) {
+                        SectionHeader("安全说明")
                         Spacer(Modifier.height(4.dp))
                         Text(
                             "密码仅用于换取 API Token，不会写入磁盘。Token 使用 Android Keystore AES-GCM 加密保存。所有库存与账户操作都直接请求你的服务器。",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = palette.muted,
                         )
                     }
                 }
@@ -298,12 +326,17 @@ fun MoreScreen(
                 }
             }
             Spacer(Modifier.height(18.dp))
-            Text(
-                "InvenTree Mobile · 为 erp.bi7khi.xyz 构建",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 20.dp),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                FieldPulseDot(size = 5.dp)
+                Spacer(Modifier.width(7.dp))
+                Text(
+                    "INVENTREE MOBILE // FIELD STYLE",
+                    fontFamily = FieldMono,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = palette.muted,
+                )
+            }
+            Spacer(Modifier.height(20.dp))
         }
     }
 
@@ -336,12 +369,13 @@ fun MoreScreen(
 @Composable
 private fun RoleChip(text: String) {
     Surface(
-        color = Color.White.copy(alpha = 0.16f),
-        shape = RoundedCornerShape(50),
+        color = Color.White.copy(alpha = 0.08f),
+        shape = FieldCutSmall,
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.18f)),
     ) {
         Text(
             text,
-            color = Color.White,
+            color = Color.White.copy(alpha = 0.85f),
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
         )
@@ -359,7 +393,7 @@ private fun SettingRow(
     Surface(
         onClick = onClick,
         color = Color.Transparent,
-        shape = RoundedCornerShape(14.dp),
+        shape = FieldCutSmall,
     ) {
         Row(
             Modifier

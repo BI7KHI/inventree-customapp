@@ -1,14 +1,16 @@
 package xyz.bi7khi.inventree.mobile.ui.navigation
 
 import android.net.Uri
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Inventory2
@@ -20,21 +22,12 @@ import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Widgets
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -45,6 +38,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import xyz.bi7khi.inventree.mobile.data.api.InvenTreeRepository
 import xyz.bi7khi.inventree.mobile.data.api.Session
+import xyz.bi7khi.inventree.mobile.ui.components.FieldBottomBar
+import xyz.bi7khi.inventree.mobile.ui.components.FieldNavItem
 import xyz.bi7khi.inventree.mobile.ui.screens.HomeScreen
 import xyz.bi7khi.inventree.mobile.ui.screens.LabelEditorScreen
 import xyz.bi7khi.inventree.mobile.ui.screens.LabelPrintScreen
@@ -111,47 +106,31 @@ fun MainNavigation(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottom) {
-                NavigationBar(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 6.dp,
-                ) {
-                    BottomItem(
-                        selected = selectedIndex == 0,
-                        label = "首页",
-                        selectedIcon = Icons.Filled.Home,
-                        unselectedIcon = Icons.Outlined.Home,
-                        onClick = { goTop(HOME) },
-                    )
-                    BottomItem(
-                        selected = selectedIndex == 1,
-                        label = "库存",
-                        selectedIcon = Icons.Filled.Inventory2,
-                        unselectedIcon = Icons.Outlined.Inventory2,
-                        onClick = { goTop(stockRoute()) },
-                    )
-                    BottomItem(
-                        selected = selectedIndex == 2,
-                        label = "扫描",
-                        selectedIcon = Icons.Filled.QrCodeScanner,
-                        unselectedIcon = Icons.Outlined.QrCodeScanner,
-                        onClick = { goTop(SCAN) },
-                        scan = true,
-                    )
-                    BottomItem(
-                        selected = selectedIndex == 3,
-                        label = "零件",
-                        selectedIcon = Icons.Filled.Widgets,
-                        unselectedIcon = Icons.Outlined.Widgets,
-                        onClick = { goTop("parts?query=") },
-                    )
-                    BottomItem(
-                        selected = selectedIndex == 4,
-                        label = "我的",
-                        selectedIcon = Icons.Filled.Person,
-                        unselectedIcon = Icons.Outlined.Person,
-                        onClick = { goTop(MORE) },
-                    )
-                }
+                FieldBottomBar(
+                    items = listOf(
+                        FieldNavItem("首页", "HOME", Icons.Outlined.Home, Icons.Filled.Home),
+                        FieldNavItem("库存", "STOCK", Icons.Outlined.Inventory2, Icons.Filled.Inventory2),
+                        FieldNavItem(
+                            label = "扫描",
+                            code = "SCAN",
+                            icon = Icons.Outlined.QrCodeScanner,
+                            selectedIcon = Icons.Filled.QrCodeScanner,
+                            isAction = true,
+                        ),
+                        FieldNavItem("零件", "PARTS", Icons.Outlined.Widgets, Icons.Filled.Widgets),
+                        FieldNavItem("我的", "USER", Icons.Outlined.Person, Icons.Filled.Person),
+                    ),
+                    selectedIndex = selectedIndex,
+                    onSelect = { index ->
+                        when (index) {
+                            0 -> goTop(HOME)
+                            1 -> goTop(stockRoute())
+                            2 -> goTop(SCAN)
+                            3 -> goTop("parts?query=")
+                            4 -> goTop(MORE)
+                        }
+                    },
+                )
             }
         },
     ) { padding ->
@@ -162,6 +141,30 @@ fun MainNavigation(
                 .fillMaxSize()
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background),
+            enterTransition = {
+                fadeIn(tween(170)) + slideInHorizontally(
+                    animationSpec = tween(280, easing = FastOutSlowInEasing),
+                    initialOffsetX = { it / 9 },
+                )
+            },
+            exitTransition = {
+                fadeOut(tween(150)) + slideOutHorizontally(
+                    animationSpec = tween(220, easing = FastOutSlowInEasing),
+                    targetOffsetX = { -it / 24 },
+                )
+            },
+            popEnterTransition = {
+                fadeIn(tween(170)) + slideInHorizontally(
+                    animationSpec = tween(260, easing = FastOutSlowInEasing),
+                    initialOffsetX = { -it / 12 },
+                )
+            },
+            popExitTransition = {
+                fadeOut(tween(150)) + slideOutHorizontally(
+                    animationSpec = tween(220, easing = FastOutSlowInEasing),
+                    targetOffsetX = { it / 16 },
+                )
+            },
         ) {
             composable(HOME) {
                 HomeScreen(
@@ -396,48 +399,4 @@ fun MainNavigation(
             }
         }
     }
-}
-
-@Composable
-private fun androidx.compose.foundation.layout.RowScope.BottomItem(
-    selected: Boolean,
-    label: String,
-    selectedIcon: ImageVector,
-    unselectedIcon: ImageVector,
-    onClick: () -> Unit,
-    scan: Boolean = false,
-) {
-    NavigationBarItem(
-        selected = selected,
-        onClick = onClick,
-        icon = {
-            if (scan) {
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = if (selected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                ) {
-                    Box(Modifier.size(38.dp), contentAlignment = Alignment.Center) {
-                        Icon(
-                            if (selected) selectedIcon else unselectedIcon,
-                            contentDescription = label,
-                            tint = if (selected) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(22.dp),
-                        )
-                    }
-                }
-            } else {
-                Icon(if (selected) selectedIcon else unselectedIcon, contentDescription = label)
-            }
-        },
-        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
-        colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.primary,
-            selectedTextColor = MaterialTheme.colorScheme.primary,
-            indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
-            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-    )
 }

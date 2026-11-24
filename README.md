@@ -1,26 +1,72 @@
 # InvenTree CustomApp
 
 [![Latest Release](https://img.shields.io/github/v/release/BI7KHI/inventree-customapp?display_name=tag&sort=semver)](https://github.com/BI7KHI/inventree-customapp/releases/latest)
+[![Field Style](https://img.shields.io/badge/pre--release-1.3.0--field-F2E900?labelColor=11130F)](https://github.com/BI7KHI/inventree-customapp/releases/tag/v1.3.0-field)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
 [![InvenTree API](https://img.shields.io/badge/InvenTree-1.5.x%20%2F%20API%20530-146B54)](https://inventree.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 面向 InvenTree 的原生 Android 客户端，使用 Kotlin、Jetpack Compose、Material 3 实现。直接调用 InvenTree REST API，库存、库位、零件、账户数据与网页端实时一致。
 
+> **1.3.0-field 预发布**：Field Style 已完成视觉确认，合并到 `main` 并发布 GitHub Pre-release。功能与稳定版 1.2.1 对齐，视觉与交互已重做；`latest` 仍指向稳定版 1.2.1。
+
+## Field Style（1.3.0-field 预发布）
+
+工业编辑风 + 近未来现场终端：暖纸白/碳黑中性底、信号黄/青、切角卡片、细网格、HUD 微标签、扫描线、警示斜纹与短促转场。
+
+设计参考公开的工业编辑风视觉语言，**不包含人物立绘、官方 Logo、游戏截图或官方字体**。
+
+| 首页 | 库存 |
+| --- | --- |
+| ![Field 首页](docs/screenshots/field-home.png) | ![Field 库存](docs/screenshots/field-stock.png) |
+
+| 零件 | 我的 |
+| --- | --- |
+| ![Field 零件](docs/screenshots/field-parts.png) | ![Field 我的](docs/screenshots/field-more.png) |
+
+| 接入终端 | 信号色 |
+| --- | --- |
+| ![Field 登录](docs/screenshots/field-login.png) | ![Field 信号色](docs/screenshots/field-signal-picker.png) |
+
+| 暗色主题 |
+| --- |
+| ![Field 暗色](docs/screenshots/field-home-dark.png) |
+
+- 首页 HUD、登录/节点接入、库存/库位、零件、详情、表单、标签打印和“我的”页统一重绘；
+- 底部导航、页面转场、卡片按压、统计数字、Hero 扫描线、扫描准星与状态脉冲动效；
+- 信号色：谷地黄、武陵青、重燃赤、浸蓝 + 12 组工业色 + HSV 自定义；
+- 亮/暗模式共用中性色，只切换信号色；滚动时状态栏图标自动明暗；
+- 设计说明与实现索引：[`docs/FIELD_STYLE.md`](docs/FIELD_STYLE.md)。
+
 ## 下载
 
-[**⬇️ 下载最新 Release**](https://github.com/BI7KHI/inventree-customapp/releases/latest)
+### 1.3.0-field 预发布
+
+[**⬇️ 下载 Field Style 预发布**](https://github.com/BI7KHI/inventree-customapp/releases/tag/v1.3.0-field)
 
 | 项目 | 值 |
 | --- | --- |
-| 当前版本 | **1.2.1** |
-| 文件 | `InvenTree-Mobile-1.2.1.apk` |
+| 版本 | **1.3.0-field** |
+| 文件 | `InvenTree-Mobile-1.3.0-field.apk` |
 | 包名 | `xyz.bi7khi.inventree.mobile` |
 | 系统要求 | Android 8.0+（API 26），targetSdk 35 |
-| 服务器 | 支持任意 InvenTree 1.5.x（API 530+），地址可在 App 内配置 |
+| APK SHA-256 | `164ff49efed6493b1af90d82ee81becf11e0ae692ca7a20e8fb90feb25a83f07` |
+
+> Pre-release 用于真机视觉验证，不替换 `latest` 稳定版；与 1.2.1 同签名，可直接覆盖安装并保留应用数据。
+
+### 稳定版 1.2.1
+
+[**⬇️ 下载最新稳定版**](https://github.com/BI7KHI/inventree-customapp/releases/latest)
+
+| 项目 | 值 |
+| --- | --- |
+| 稳定版 | **1.2.1** |
+| 文件 | `InvenTree-Mobile-1.2.1.apk` |
 | APK SHA-256 | `55daf7e465269463e45ecf5d77b6b9e5b2c8638c767a31c9ce203b11b9352840` |
 
 > GitHub Release 附件是签名 APK；`dist/` 是本地构建产物，不纳入 Git。
+
+### 稳定版界面
 
 | 首页 | 零件 |
 | --- | --- |
@@ -219,13 +265,15 @@ app/src/main/java/xyz/bi7khi/inventree/mobile/
   data/label/        标签模型、渲染器、BLE 传输、ESC/POS/TSPL2
   ui/screens/        登录、首页、库存、库位、零件、扫码、打印、设计器
   ui/navigation/     路由与底栏
-  ui/components/     图片、选择器、二维码、通用组件
+  ui/components/     图片、选择器、二维码、Field 组件与通用组件
 docs/                截图、BLE 与标签变量说明
 dist/                本地构建 APK（Git 忽略）
 ```
 
 ## 文档
 
+- [Field Style 设计说明](docs/FIELD_STYLE.md)
+- [1.3.0-field 预发布说明](docs/RELEASE_1.3.0-FIELD.md)
 - [BLE 打印与传输](docs/BLE_PRINTING.md)
 - [标签变量列表](docs/LABEL_VARIABLES.md)
 - [变更记录](CHANGELOG.md)

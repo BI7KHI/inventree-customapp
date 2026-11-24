@@ -3,6 +3,7 @@ package xyz.bi7khi.inventree.mobile.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,25 +18,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowForward
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,10 +52,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import xyz.bi7khi.inventree.mobile.BuildConfig
 import xyz.bi7khi.inventree.mobile.ui.SessionUiState
-import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.SessionViewModel
+import xyz.bi7khi.inventree.mobile.ui.StatusBarIcons
 import xyz.bi7khi.inventree.mobile.ui.components.BrandMark
-import xyz.bi7khi.inventree.mobile.ui.components.GradientHero
+import xyz.bi7khi.inventree.mobile.ui.components.FieldHero
+import xyz.bi7khi.inventree.mobile.ui.components.FieldMicroLabel
+import xyz.bi7khi.inventree.mobile.ui.components.FieldPulseDot
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCutLarge
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldCutSmall
+import xyz.bi7khi.inventree.mobile.ui.theme.FieldMono
+import xyz.bi7khi.inventree.mobile.ui.theme.LocalFieldPalette
 import xyz.bi7khi.inventree.mobile.util.UrlUtils
 
 @Composable
@@ -66,6 +70,7 @@ fun ServerSetupScreen(
     viewModel: SessionViewModel,
 ) {
     StatusBarIcons(lightIcons = true)
+    val palette = LocalFieldPalette.current
     var url by rememberSaveable { mutableStateOf(state.serverUrl) }
     val normalizedInput = remember(url) { runCatching { UrlUtils.normalizeServerUrl(url) }.getOrNull() }
     val defaultNormalized = remember { UrlUtils.normalizeServerUrl(BuildConfig.DEFAULT_SERVER_URL) }
@@ -74,11 +79,11 @@ fun ServerSetupScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(palette.paper)
             .verticalScroll(rememberScrollState())
             .imePadding(),
     ) {
-        GradientHero(
+        FieldHero(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp),
@@ -87,54 +92,73 @@ fun ServerSetupScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .systemBarsPadding()
-                    .padding(horizontal = 28.dp, vertical = 28.dp),
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                BrandMark(size = 62.dp, backgroundColor = Color.White.copy(alpha = 0.16f))
-                Spacer(Modifier.height(20.dp))
+                BrandMark(size = 58.dp)
+                Spacer(Modifier.height(18.dp))
+                FieldMicroLabel("REMOTE NODE // CONFIGURE", color = palette.signal)
                 Text(
-                    "InvenTree",
-                    style = MaterialTheme.typography.displaySmall,
+                    "接入服务器",
+                    style = MaterialTheme.typography.headlineLarge,
                     color = Color.White,
                 )
+                Spacer(Modifier.height(4.dp))
                 Text(
-                    "连接你的库存服务器",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White.copy(alpha = 0.78f),
+                    "连接你的 InvenTree 库存节点",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.58f),
                 )
+                Spacer(Modifier.height(11.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FieldPulseDot(color = palette.signal, size = 6.dp)
+                    Spacer(Modifier.size(7.dp))
+                    FieldMicroLabel("HTTPS // API 530+", color = Color.White.copy(alpha = 0.60f))
+                }
             }
         }
 
-        Card(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(top = 20.dp),
-            shape = RoundedCornerShape(26.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                .padding(horizontal = 16.dp, vertical = 18.dp),
+            shape = FieldCutLarge,
+            color = palette.panel,
+            border = BorderStroke(1.dp, palette.line),
+            shadowElevation = 8.dp,
         ) {
-            Column(Modifier.padding(22.dp)) {
+            Column(Modifier.padding(20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FieldMicroLabel("NODE ADDRESS // 01", color = palette.signalText)
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        "REQUIRED",
+                        fontFamily = FieldMono,
+                        color = palette.muted,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+                Spacer(Modifier.height(9.dp))
                 Text(
                     "服务器地址",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(5.dp))
                 Text(
                     "填写自建 InvenTree 的访问地址，应用会自动补全 API 路径。",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = palette.muted,
                 )
                 Spacer(Modifier.height(16.dp))
                 OutlinedTextField(
                     value = url,
                     onValueChange = { url = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("例如 erp.bi7khi.xyz") },
+                    label = { Text("例如 inventree.example.com") },
                     leadingIcon = { Icon(Icons.Outlined.Dns, contentDescription = null) },
                     singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = FieldCutSmall,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Uri,
                         imeAction = ImeAction.Go,
@@ -144,8 +168,8 @@ fun ServerSetupScreen(
                     ),
                     isError = state.error != null,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedContainerColor = palette.panel,
+                        unfocusedContainerColor = palette.panel,
                     ),
                 )
 
@@ -159,25 +183,40 @@ fun ServerSetupScreen(
                         TextButton(onClick = { url = BuildConfig.DEFAULT_SERVER_URL }) {
                             Icon(Icons.Outlined.Public, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.size(6.dp))
-                            Text("使用默认服务器")
+                            Text("使用预置服务器")
                         }
                     } else {
-                        Text(
-                            "默认服务器 erp.bi7khi.xyz",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 8.dp),
-                        )
+                        Row(
+                            Modifier.padding(horizontal = 6.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            FieldPulseDot(size = 5.dp)
+                            Spacer(Modifier.size(6.dp))
+                            Text(
+                                "预置节点已选中",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = palette.signalText,
+                            )
+                        }
                     }
                 }
 
                 AnimatedVisibility(visible = state.error != null, enter = fadeIn(), exit = fadeOut()) {
-                    Text(
-                        text = state.error.orEmpty(),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 8.dp),
-                    )
+                    Surface(
+                        color = palette.danger.copy(alpha = 0.10f),
+                        shape = FieldCutSmall,
+                        border = BorderStroke(1.dp, palette.danger.copy(alpha = 0.45f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    ) {
+                        Text(
+                            text = state.error.orEmpty(),
+                            color = palette.danger,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(10.dp),
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(18.dp))
@@ -186,53 +225,64 @@ fun ServerSetupScreen(
                     enabled = !state.busy && url.isNotBlank(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(54.dp),
-                    shape = RoundedCornerShape(16.dp),
+                        .height(52.dp),
+                    shape = FieldCutSmall,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = palette.signal,
+                        contentColor = palette.onSignal,
+                        disabledContainerColor = palette.panelAlt,
+                        disabledContentColor = palette.muted,
                     ),
                 ) {
                     if (state.busy) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(19.dp),
                             strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = palette.onSignal,
                         )
                     } else {
-                        Text("连接服务器", style = MaterialTheme.typography.labelLarge)
+                        Text("建立节点连接", style = MaterialTheme.typography.labelLarge)
                         Spacer(Modifier.size(8.dp))
                         Icon(Icons.Outlined.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp))
                     }
                 }
 
                 Spacer(Modifier.height(16.dp))
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(palette.line),
+                )
+                Spacer(Modifier.height(12.dp))
                 Row(verticalAlignment = Alignment.Top) {
                     Icon(
                         Icons.Outlined.Lock,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = palette.muted,
                         modifier = Modifier
                             .padding(top = 2.dp)
                             .size(15.dp),
                     )
                     Spacer(Modifier.size(8.dp))
                     Text(
-                        "凭据仅保存在本机，API Token 会使用 Android Keystore 加密。生产环境建议使用 HTTPS。",
+                        "凭据仅保存在本机，API Token 使用 Android Keystore 加密。生产环境建议使用 HTTPS。",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = palette.muted,
                     )
                 }
             }
         }
 
         Text(
-            "InvenTree Mobile ${BuildConfig.VERSION_NAME}\n兼容 InvenTree 1.5.x / API v530+",
+            "INVENTREE MOBILE ${BuildConfig.VERSION_NAME}  //  API v530+",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = palette.muted,
+            fontFamily = FieldMono,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(28.dp),
+                .padding(24.dp),
         )
     }
 }

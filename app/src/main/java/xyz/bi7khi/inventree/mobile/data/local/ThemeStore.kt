@@ -15,7 +15,7 @@ data class ThemeSettings(
     val seedArgb: Int = DEFAULT_SEED,
 ) {
     companion object {
-        const val DEFAULT_SEED = 0xFF146B54.toInt()
+        const val DEFAULT_SEED = 0xFFF2E900.toInt()
     }
 }
 
